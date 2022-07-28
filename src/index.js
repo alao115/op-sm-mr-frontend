@@ -1,17 +1,24 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import React, { Suspense, lazy } from "react";
+import ReactDOM from "react-dom/client";
+import Spinner from "./views/spinner/Spinner";
+import 'bootstrap/dist/css/bootstrap.min.css';
+import "./assets/css/index.css"
+import "./assets/scss/style.scss"
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
+const App = lazy(
+  () =>
+    new Promise((resolve) => {
+      setTimeout(() => resolve(import("./app")), 0);
+    })
 );
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(
+  <Suspense fallback={<Spinner />}>
+    <React.StrictMode>
+      {/* <BrowserRouter> */}
+        <App />
+      {/* </BrowserRouter> */}
+    </React.StrictMode>
+  </Suspense>
+);
