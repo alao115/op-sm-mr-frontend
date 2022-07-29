@@ -50,7 +50,7 @@ const MedicalBook = (props) => {
   const dispatch = useDispatch();
 
   const { resourceData: Interventions, loadingState: interventionLoadingState } = useFetchResource({ errorHeader: "Liste interventions", resourceService: 'interventionService', action: 'getAllByTractor', params: { tractor: tractor.tractor.id } })
-  const { resourceData: Maintenances, loadingState: maintenanceLoadingState } = useFetchResource({ errorHeader: "Liste maintenances", resourceService: 'maintenanceService', action: 'getAll', params: { tractor: tractor.tractor.id } })
+  const { resourceData: Maintenances, loadingState: maintenanceLoadingState } = useFetchResource({ errorHeader: "Liste maintenances", resourceService: 'maintenanceService', action: 'getAllByTractor', params: { tractor: tractor.tractor.id } })
   const [tabData, setTabData ] = useState({})
   
 
