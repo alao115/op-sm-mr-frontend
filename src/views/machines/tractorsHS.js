@@ -80,8 +80,8 @@ export default function TractorHS() {
           </CardBody>
           <CardTitle className="bg-light border-bottom p-3 mb-0">
             <Row className="justify-content-between px-4">
-              <h2>Liste des tracteurs H.S</h2>
-              <ExportToExcel exportToExcelFn={ () => exportToExcel() } disabled={loading || disabledDownloadBtn} loading={downloadLoading}/>
+              <h2 className="w-fit">Liste des tracteurs H.S</h2>
+              <ExportToExcel className="flex-grow-0 w-fit" exportToExcelFn={ () => exportToExcel() } disabled={loading || disabledDownloadBtn} loading={downloadLoading}/>
             </Row>
           </CardTitle>
           {
