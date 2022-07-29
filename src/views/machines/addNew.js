@@ -1,4 +1,4 @@
-import React, { useState, /* useReducer */ } from "react";
+import React, { useState /* useReducer */ } from "react";
 
 import {
   Card,
@@ -11,21 +11,39 @@ import {
   Label,
   Input,
   FormText,
-  Button
+  Button,
 } from "reactstrap";
 
-import CustomSelect from "../../components/Select/Select"
+import CustomSelect from "../../components/Select/Select";
 
-import { useSelector } from 'react-redux'
-import { useToasts } from 'react-toast-notifications'
+import { useSelector } from "react-redux";
+import { useToasts } from "react-toast-notifications";
 
-
-export default function BasicForm (props) {
-  console.log("Inside here")
-	const [getDepart, setDepart] = useState('');
+export default function BasicForm(props) {
+  console.log("Inside here");
+  const [getDepart, setDepart] = useState("");
   const [errors, setErrors] = useState({});
-  const { $api, $message } = useSelector(state => state)
+  const { $api, $message } = useSelector((state) => state);
   const { addToast } = useToasts();
+
+  const [equipementsTracteurs, setEq] = useState([
+    { label: "Herse", name: "herse" },
+    { label: "Moissonneuse batteuse", name: "moissonneuseBatteuse" },
+    { label: "Rotavateur", name: "rotavator" },
+    { label: "Semoir", name: "semoir" },
+    { label: "Chisel", name: "chisel" },
+    { label: "Charrue", name: "charrue" },
+    { label: "Remorque", name: "remorque" },
+    { label: "Epandeur d'engrais", name: "epandeurdengrais" },
+    { label: "Fraise", name: "fraise" },
+    { label: "Tarriére", name: "tarriere" },
+    { label: "Buteuse", name: "buteuse" },
+    { label: "Avez-vous des mécaniciens?", name: "mechanicAvailability" },
+    {
+      label: "Avez-vous un tractoriste pour votre tracteur?",
+      name: "presenceTractorist",
+    },
+  ]);
 
   // function tractorReducer(state, { type, value }) {
   //   switch (type) {
@@ -35,43 +53,43 @@ export default function BasicForm (props) {
   //       return { ...state, lastName: value }
   //     case 'setDep':
   //       return { ...state, department: value }
-  //     case 'setTown': 
+  //     case 'setTown':
   //       return { ...state, town: value }
-  //     case 'setPhone': 
+  //     case 'setPhone':
   //       return { ...state, phone: value }
-  //     case 'setNChassis': 
+  //     case 'setNChassis':
   //       return { ...state, numChassis: value }
-  //     case 'setTractorMark': 
+  //     case 'setTractorMark':
   //       return { ...state, tractorMark: value }
-  //     case 'setTractorType': 
+  //     case 'setTractorType':
   //       return { ...state, tractorType: value }
-  //     case 'setType': 
+  //     case 'setType':
   //       return { ...state, type: value }
-  //     case 'setHerse': 
+  //     case 'setHerse':
   //       return { ...state, herse: value }
-  //     case 'setMBatteuse': 
+  //     case 'setMBatteuse':
   //       return { ...state, moissonneuseBatteuse: value }
-  //     case 'setChisel': 
+  //     case 'setChisel':
   //       return { ...state, chisel: value }
-  //     case 'setFraise': 
+  //     case 'setFraise':
   //       return { ...state, fraise: value }
-  //     case 'setCharrue': 
+  //     case 'setCharrue':
   //       return { ...state, charrue: value }
-  //     case 'setTarriere': 
+  //     case 'setTarriere':
   //       return { ...state, tarriere: value }
-  //     case 'setRotavator': 
+  //     case 'setRotavator':
   //       return { ...state, rotavator: value }
-  //     case 'setRemorque': 
+  //     case 'setRemorque':
   //       return { ...state, remorque: value }
-  //     case 'setButeuse': 
+  //     case 'setButeuse':
   //       return { ...state, buteuse: value }
-  //     case 'setSemoir': 
+  //     case 'setSemoir':
   //       return { ...state, semoir: value }
-  //     case 'setEEngrais': 
+  //     case 'setEEngrais':
   //       return { ...state, epandeurdengrais: value }
-  //     case 'setMechAvailability': 
+  //     case 'setMechAvailability':
   //       return { ...state, mechanicAvailability: value }
-  //     case 'setPTractorist': 
+  //     case 'setPTractorist':
   //       return { ...state, presenceTractorist: value }
   //     default: return { ...state }
   //   }
@@ -81,36 +99,63 @@ export default function BasicForm (props) {
 
   function createNewTractor(e) {
     e.preventDefault();
-    const inputs = Array.from( document.querySelectorAll( "#addNewTractor input, #addNewTractor select, #addNewTractor")).slice(1);
+    const inputs = Array.from(
+      document.querySelectorAll(
+        "#addNewTractor input, #addNewTractor select, #addNewTractor"
+      )
+    ).slice(1);
 
     const data = {};
-    let errors = {}
+    let errors = {};
 
     inputs.forEach((input) => {
-      if(input.name === 'type') {
+      if (input.name === "type") {
         if (input.checked) data[input.name] = input.value;
       } else {
-        data[input.name] = input.type === 'checkbox' ? input.checked : input.value;
+        data[input.name] =
+          input.type === "checkbox" ? input.checked : input.value;
       }
 
-      if(!input.value) errors[input.name] = true
-      if(input.type === 'radio') errors[input.name] = errors[input.name] || input.checked; 
-      
+      if (!input.value) errors[input.name] = true;
+      if (input.type === "radio")
+        errors[input.name] = errors[input.name] || input.checked;
     });
 
-    if (errors.firstName || errors.lastName || errors.numChassis || errors.phone || errors.town || !errors.type) {
-      setErrors(errors)
+    if (
+      errors.firstName ||
+      errors.lastName ||
+      errors.numChassis ||
+      errors.phone ||
+      errors.town ||
+      !errors.type
+    ) {
+      setErrors(errors);
     } else {
-      $api.tractorService.create({ ...data, _id: data.numChassis })
+      $api.tractorService
+        .create({ ...data, _id: data.numChassis })
         .then((response) => {
-          addToast($message({ header: "Ajout nouveau tracteur", message: "Nouveau tracteur ajoute avec succes" }), { appearance: "success", autoDismiss: true })
-          setErrors({})
-          inputs.forEach((input) => { input.value = "" });
-         })
-        .catch(error => {
-          addToast($message({ header: "Ajout nouveau tracteur", message: "Une erreur s'est produite. Veuillez reessayer" }), { appearance: "error", autoDismiss: true })
-          // console.log(error)
+          addToast(
+            $message({
+              header: "Ajout nouveau tracteur",
+              message: "Nouveau tracteur ajoute avec succes",
+            }),
+            { appearance: "success", autoDismiss: true }
+          );
+          setErrors({});
+          inputs.forEach((input) => {
+            input.value = "";
+          });
         })
+        .catch((error) => {
+          addToast(
+            $message({
+              header: "Ajout nouveau tracteur",
+              message: "Une erreur s'est produite. Veuillez reessayer",
+            }),
+            { appearance: "error", autoDismiss: true }
+          );
+          // console.log(error)
+        });
     }
   }
 
@@ -212,26 +257,51 @@ export default function BasicForm (props) {
                   <Col md="6">
                     <FormGroup>
                       <Label>Nom</Label>
-                      <Input type="text" placeholder="John" bsSize="lg" name="firstName" />
-                      <span className="text-danger">{errors.firstName && "'Nom' est obligatoire."}</span>
+                      <Input
+                        type="text"
+                        placeholder="John"
+                        bsSize="lg"
+                        name="firstName"
+                      />
+                      <span className="text-danger">
+                        {errors.firstName && "'Nom' est obligatoire."}
+                      </span>
                     </FormGroup>
                   </Col>
                   <Col md="6">
                     <FormGroup>
                       <Label>Prénoms</Label>
-                      <Input type="text" placeholder="Doe" bsSize="lg" name="lastName" />
-                      <span className="text-danger">{errors.lastName && "'Prenom' est obligatoire."}</span>
+                      <Input
+                        type="text"
+                        placeholder="Doe"
+                        bsSize="lg"
+                        name="lastName"
+                      />
+                      <span className="text-danger">
+                        {errors.lastName && "'Prenom' est obligatoire."}
+                      </span>
                     </FormGroup>
                   </Col>
                 </Row>
                 <Row>
                   <Col md="6">
-                      {/* <CustomSelect /> */}
+                    {/* <CustomSelect /> */}
                     <FormGroup>
                       <Label>Département</Label>
-                      <Input type="select" name="department" bsSize="lg" onChange={(e) => { setDepart(e.target.value) }}>
-												<option>Selectionner un department</option>
-                        { Object.keys(departments).map( department => <option value={department} key={department}>{department}</option>) }
+                      <Input
+                        type="select"
+                        name="department"
+                        bsSize="lg"
+                        onChange={(e) => {
+                          setDepart(e.target.value);
+                        }}
+                      >
+                        <option>Selectionner un department</option>
+                        {Object.keys(departments).map((department) => (
+                          <option value={department} key={department}>
+                            {department}
+                          </option>
+                        ))}
                       </Input>
                       <FormText className="muted">
                         Selectionner votre departement
@@ -241,10 +311,22 @@ export default function BasicForm (props) {
                   <Col md="6">
                     <FormGroup>
                       <Label>Ville</Label>
-                      <Input type="select" name="town" bsSize="lg" disabled={!getDepart}>
-                        { departments[getDepart] && departments[getDepart].map(town => <option value={town} key={town}>{town}</option>)}
+                      <Input
+                        type="select"
+                        name="town"
+                        bsSize="lg"
+                        disabled={!getDepart}
+                      >
+                        {departments[getDepart] &&
+                          departments[getDepart].map((town) => (
+                            <option value={town} key={town}>
+                              {town}
+                            </option>
+                          ))}
                       </Input>
-                      <span className="text-danger">{errors.town && "'Ville' est obligatoire."}</span>
+                      <span className="text-danger">
+                        {errors.town && "'Ville' est obligatoire."}
+                      </span>
                       <FormText className="muted">
                         Selectionner votre ville
                       </FormText>
@@ -255,8 +337,16 @@ export default function BasicForm (props) {
                   <Col md="12">
                     <FormGroup>
                       <Label>Téléphone</Label>
-                      <Input type="tel" placeholder="Tel: 00005566" bsSize="lg" name="phone" minLength="8" />
-                      <span className="text-danger">{errors.phone && "'Telephone' est obligatoire."}</span>
+                      <Input
+                        type="tel"
+                        placeholder="Tel: 00005566"
+                        bsSize="lg"
+                        name="phone"
+                        minLength="8"
+                      />
+                      <span className="text-danger">
+                        {errors.phone && "'Telephone' est obligatoire."}
+                      </span>
                     </FormGroup>
                   </Col>
                 </Row>
@@ -269,8 +359,16 @@ export default function BasicForm (props) {
                   <Col md="12">
                     <FormGroup>
                       <Label>Numero Chassis</Label>
-                      <Input type="text" placeholder="MZGKAOAH0000Z" name="numChassis" bsSize="lg" />
-                      <span className="text-danger">{errors.numChassis && "'Numero chassis' est obligatoire."}</span>
+                      <Input
+                        type="text"
+                        placeholder="MZGKAOAH0000Z"
+                        name="numChassis"
+                        bsSize="lg"
+                      />
+                      <span className="text-danger">
+                        {errors.numChassis &&
+                          "'Numero chassis' est obligatoire."}
+                      </span>
                     </FormGroup>
                   </Col>
                   <Col md="6">
@@ -290,14 +388,34 @@ export default function BasicForm (props) {
                     </FormGroup>
                   </Col>
                   <Col md="6">
-                    <FormGroup check className='flex flex-col'>
-                      <Label check>Type</Label>
-                      <Input type="radio" id="exampleCustomRadio3" name="type" label="Tracteur" value="1" />
+                    <span>Type de machine</span>
+                    <FormGroup check className="flex">
+                      <Label check for="exampleCustomRadio3">
+                        Tracteur
+                      </Label>
+                      <Input
+                        type="radio"
+                        id="exampleCustomRadio3"
+                        name="type"
+                        label="Tracteur"
+                        value="1"
+                      />
                     </FormGroup>
-                    <FormGroup>
-                      <Input type="radio" id="exampleCustomRadio4" name="type" label="Motoculteur" value="2" />
-                      <span className="text-danger">{errors.type === false && "'Type' est obligatoire."}</span>
+                    <FormGroup check className="flex flex-col">
+                      <Label check for="exampleCustomRadio4">
+                        Motoculteur
+                      </Label>
+                      <Input
+                        type="radio"
+                        id="exampleCustomRadio4"
+                        name="type"
+                        label="Motoculteur"
+                        value="2"
+                      />
                     </FormGroup>
+                    <span className="text-danger">
+                      {errors.type === false && "'Type' est obligatoire."}
+                    </span>
                   </Col>
                 </Row>
               </CardBody>
@@ -307,25 +425,16 @@ export default function BasicForm (props) {
               <CardBody>
                 <FormGroup check>
                   <Row>
-                    <Col md="4">
-                      <Input type="checkbox" id="exampleCustomCheckbox1" label="Herse" name="herse" />
-                      <Input type="checkbox" id="exampleCustomCheckbox2" label="Moissonneuse batteuse" name="moissonneuseBatteuse" />
-                      <Input type="checkbox" id="exampleCustomCheckbox3" label="Rotavateur" name="rotavator" />
-                      <Input type="checkbox" id="exampleCustomCheckbox4" label="Semoir" name="semoir" />
-                    </Col>
-                    <Col md="4">
-                      <Input type="checkbox" id="exampleCustomCheckbox5" label="Chisel" name="chisel" />
-                      <Input type="checkbox" id="exampleCustomCheckbox6" label="Charrue" name="charrue" />
-                      <Input type="checkbox" id="exampleCustomCheckbox7" label="Remorque" name="remorque" />
-                      <Input type="checkbox" id="exampleCustomCheckbox8" label="Epandeur d'engrais" name="epandeurdengrais" />
-                    </Col>
-                    <Col md="4">
-                      <Input type="checkbox" id="exampleCustomCheckbox9" label="Fraise" name="fraise" />
-                      <Input type="checkbox" id="exampleCustomCheckbox10" label="Tarriére" name="tarriere" />
-                      <Input type="checkbox" id="exampleCustomCheckbox11" label="Buteuse" name="buteuse" />
-                      <Input type="checkbox" id="exampleCustomCheckbox12" label="Avez-vous des mécaniciens?" name="mechanicAvailability" />
-                      <Input type="checkbox" id="exampleCustomCheckbo13" label="Avez-vous un tractoriste pour votre tracteur?" name="presenceTractorist" />
-                    </Col>
+                    <div className="grid grid-cols-3 grid-rows-4">
+                      {equipementsTracteurs.map((el, index) => (
+                        <FormGroup check key={index}>
+                          <Label check>
+                            <Input id={index} type="checkbox" name={el.name} />
+                            {el.label}
+                          </Label>
+                        </FormGroup>
+                      ))}
+                    </div>
                   </Row>
                 </FormGroup>
               </CardBody>
@@ -344,6 +453,6 @@ export default function BasicForm (props) {
       {/*--------------------------------------------------------------------------------*/}
     </div>
   );
-};
+}
 
 // export default BasicForm;
