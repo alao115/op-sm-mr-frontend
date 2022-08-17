@@ -185,10 +185,10 @@ const SalesSummary = () => {
                 <h6 className="font-light text-muted">Nombre de trateur total</h6>
                 <h3 className="mt-4 mb-0">{ tractorOverview.tractorTotal }</h3>
                 <h6 className="font-light text-muted">Tracteurs traces</h6>
-                <Row className="ml-1">
-                  <button className="btn btn-info my-3 p-3 px-4" onClick={ () => setPreviousMonth(true) }> Apercu mois précédent </button>
-                  <button className="btn btn-secondary my-3 p-3 px-4 ml-4" onClick={ () => setPreviousMonth(false) }> Apercu mois actuel </button>
-                </Row>
+                <div className="flex space-x-4">
+                  <button className="btn btn-info p-3 px-4" onClick={ () => setPreviousMonth(true) }> Apercu mois précédent </button>
+                  <button className="btn btn-secondary p-3 px-4 " onClick={ () => setPreviousMonth(false) }> Apercu mois actuel </button>
+                </div>
               </>
             }    
           </Col>

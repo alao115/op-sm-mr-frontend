@@ -90,7 +90,7 @@ const EmailCampaign = () => {
       fillSeriesColor: false,
     },
   };
-  const seriesvisit = tractorByAtdaOverview.filter(item => item.atda !== 'false').map(x => x.total);
+  const seriesvisit = tractorByAtdaOverview.filter(item => item.atda !== 'false' && item.atda !== "").map(x => x.total);
   return (
     /*--------------------------------------------------------------------------------*/
     /* Used In Dashboard-1 [Classic]                                                  */
