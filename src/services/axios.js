@@ -7,8 +7,7 @@ const authAxios = axios.create({
 
 // Alter defaults after instance has been created
 const token = localStorage.getItem('miriaa-token')
-// console.log(!!token)
-if (token) authAxios.defaults.headers.common['Authorization'] = 'Bearer ' + JSON.parse(token)
+if (token) authAxios.defaults.headers.common['Authorization'] = 'Bearer ' + token
 
 export { authAxios }
 

@@ -8,6 +8,10 @@ export default function authService({ http, authAxios }) {
       return http.post("/auth/signin", data);
     }
 
+		async refreshToken(data) {
+			return http.post("auth/refresh-token", data)
+		}
+
     async getAuthUser(token = null) {
       if (token)
         authAxios.defaults.headers.common["Authorization"] = "Bearer " + token;

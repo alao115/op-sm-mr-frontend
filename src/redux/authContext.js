@@ -1,7 +1,7 @@
 import moment from 'moment'
 import React, { useState, useEffect } from "react";
+import { useCallback } from 'react'
 import { useSelector, useDispatch } from "react-redux";
-// import { Redirect } from "react-router-dom";
 import { useToasts } from 'react-toast-notifications';
 
 export const AuthContext = React.createContext({
@@ -14,53 +14,64 @@ export const AuthContext = React.createContext({
 
 export default function AuthContextFn (props) {
 	const tokenValue = localStorage.getItem('miriaa-token')
+  const refreshTokenValue = localStorage.getItem('miriaa-refreshToken')
 	const expireInValue = localStorage.getItem('miriaa-expiresIn')
-  const [token, setToken] = useState((tokenValue ? JSON.parse(tokenValue) : null));
-  const [expireIn, setExpireIn] = useState((expireInValue ? JSON.parse(expireInValue) : null));
+  const [token, setToken] = useState(tokenValue || "");
+  const [refreshToken, setRefreshToken] = useState(refreshTokenValue || "")
+  const [expireIn, setExpireIn] = useState(expireInValue || 0);
 	const [authUser, setAuthUser] = useState(null); 
   const { $api, $message } = useSelector((state) => state);
   const { addToast } = useToasts()
   const dispatch = useDispatch()
 
-  const isLoggedIn = !!token;
-
-  const loginFn = (token, expireIn) => {
-    setToken(token);
-		setExpireIn(expireIn)
-  	localStorage.setItem("miriaa-token", JSON.stringify(token));
-		localStorage.setItem('miriaa-expiresIn', JSON.stringify(expireIn))
+  const loginFn = ({ accessToken, refreshToken, expiresIn }) => {
+    setToken(accessToken)
+    setRefreshToken(refreshToken)
+		setExpireIn(expiresIn)
+  	localStorage.setItem("miriaa-token", accessToken)
+    localStorage.setItem("miriaa-refreshToken", refreshToken)
+		localStorage.setItem('miriaa-expiresIn', expiresIn)
   };
 
   const logoutFn = () => {
-    setToken(null);
+    setToken("");
+    setRefreshToken("");
+    setExpireIn(0);
 		localStorage.removeItem('miriaa-token');
+		localStorage.removeItem('miriaa-refreshToken');
 		localStorage.removeItem('miriaa-expiresIn');
 		return Promise.resolve()
   };
+
+  const refreshTokenFn = useCallback(async () => {
+    try {
+      const refreshToken = localStorage.getItem('miriaa-refreshToken')
+      const response = await $api.authService.refreshToken({ 'refresh-token': refreshToken })
+      loginFn(response.data.data)
+    } catch (error) {
+        addToast($message({ header: 'Token expired', message: 'Votre token est expiré' }), { appearance: 'error', autoDismiss: true })
+				logoutFn()
+    }
+  }, [$api.authService, $message, addToast])
 
 	useEffect(() => {
 		if(expireIn > 0) {
 			const remainingTime = (+expireIn) - (+moment().unix())
 			setTimeout(() => {
-        addToast($message({ header: 'Token expired', message: 'Votre token est expiré' }), { appearance: 'error', autoDismiss: true })
-				logoutFn()
+        refreshTokenFn()
 			}, remainingTime * 1000)
 		}
-	}, [$message, addToast, expireIn])
+	}, [$message, addToast, expireIn, refreshToken, refreshTokenFn])
 
   useEffect(() => {
     if (token) {
       $api.authService.getAuthUser(token)
         .then(({ data }) => {
-
           if(!data.data.user.isActivated) {
             addToast($message({ header: 'Authentification', message: "Votre compte n'est activé. Veuillez-vous rapprocher de l'administrateur" }), { appearance: 'error', autoDismiss: true })
             logoutFn()
-            // return <Redirect to={{ pathname: "/authentication/Login", state: { from: props.location }, }} />
           }
-
 					setAuthUser(data.data.user)
-
         }).catch(err => {
         	const message = err?.response?.data.error.message || err.message;
         	addToast($message({ header: '', message }), { appearance: 'error', autoDismiss: true })
@@ -73,7 +84,7 @@ export default function AuthContextFn (props) {
 
   const initialState = {
     token,
-    isLoggedIn,
+    isLoggedIn: !!token,
     loginFn,
     logoutFn,
 		authUser

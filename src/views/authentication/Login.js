@@ -67,7 +67,7 @@ const Login = (props) => {
                     setStatus();
                     $api.authService.signin({ email: username, password }).then(
                       (response) => {
-                        loginFn(response.data.data.accessToken, response.data.data.expiresIn);
+                        loginFn(response.data.data);
                         // dispatch({ type: '$authData/setToken', value: response.data.data.accessToken })
 
                         const { from } = location.state || { from: { pathname: "/" } };
