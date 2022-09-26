@@ -23,6 +23,8 @@ export default function EntretienTable({ tractors }) {
     }
   }, [tractors])
 
+  const tractorType = (type) => type === 1 ? "Tracteur": "Motoculteur"
+
   useEffect(() => {
     filtrer('')
   }, [filtrer])
@@ -64,20 +66,20 @@ export default function EntretienTable({ tractors }) {
               <tbody>
                 {tableData.map((tractor) => {
                   return (
-                    <tr key={tractor.tractor.id}>
+                    <tr key={tractor.id}>
                       <td>
                         <div  className={"d-flex no-block align-items-center"+ (tractor.tractor.id==='14D152' ? 'red' : '')+ (tractor.tractor.id==='14D152' ? 'jaune' : '') + (tractor.tractor.id==='14D152' ? 'jaune' : '') }>
                           <div className="">
-                            <h5 className="mb-0 font-16 font-medium">{tractor.tractor.id}</h5>
+                            <h5 className="mb-0 font-16 font-medium">{tractor.tractor._id}</h5>
                           </div>
                         </div>
                       </td>
-                      <td>{tractor.user.firstName} {tractor.user.lastName}</td>
-                      <td> { tractor.user.phone} </td>
+                      <td>{tractor.user?.firstName} {tractor.user?.lastName}</td>
+                      <td> { tractor.user?.phone} </td>
                       <td>
-                        <span> {tractor.user.address} </span>
+                        <span> {tractor.user?.address} </span>
                       </td>
-                      <td className="blue-grey-text  text-darken-4 font-medium"> {`${tractor.tractor.tractorType}, ${tractor.tractor.tractorMark}`} </td>
+                      <td className="blue-grey-text  text-darken-4 font-medium"> {`${tractorType(tractor.tractor.type)}, ${tractor.tractor.tractorMark}`} </td>
                       <td className="blue-grey-text  text-darken-4 font-medium"> {tractor.type} </td>
                       <td className="blue-grey-text  text-darken-4 font-medium"> {tractor.hmTotalFromLastMaintenance.toFixed(2)} </td>
                     </tr>

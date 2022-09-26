@@ -1,9 +1,8 @@
-import React from "react";
+import React, { useMemo } from "react";
 import {
   Card,
   CardBody,
   CardTitle,
-  CardSubtitle,
   Col,
   Row,
   // CustomInput,
@@ -12,53 +11,48 @@ import {
   Button
 } from "reactstrap";
 // import Spinner from '../../../views/spinner/Spinner';
-import * as S from "../";
+// import * as S from "../";
 import Chart from "react-apexcharts";
-import { useSelector } from 'react-redux'
-import { useToasts } from 'react-toast-notifications'
 import { useState } from 'react'
 import { useEffect } from 'react'
 import moment from 'moment'
+import 'moment/locale/fr'
+import useFetchResource from '../../../hooks/useFetchResource';
+
 
 //Line chart
 
-
 const SalesSummary = () => {
-  const { $api, $message } = useSelector((state) => state);
-  const { addToast } = useToasts()
   const [reportOverviewLoading, setReportOverviewLoading] = useState(false)
   const [reportOverviewByAtda, setReportOverviewByAtda] = useState([])
   const [atda, setAtda] = useState("")
   const [valType, setValType] = useState(false)
-  const [previousMonth, setPreviousMonth] = useState(false)
+  const [previousMonth, setPreviousMonth] = useState(0)
   const [tractorOverview, setTractorOverview] = useState([])
   const [tractorOverviewLoading, setTractorOverviewLoading] = useState(false)
 
+  const params = useMemo(() => ({ atda, valType, previousMonth }), [atda, valType, previousMonth])
+  const { resourceData: overviewByAtda, loadingState: overviewByAtdaLoading } = useFetchResource({ errorHeader: 'Tracteur par Atda', resourceService: 'overviewService', action: 'getReportOverviewByAtda', params })
+  const { resourceData: overviewTractor, loadingState: overviewTractorLoading } = useFetchResource({ errorHeader: 'Tracteur par Atda', resourceService: 'overviewService', action: 'getTractorOverview' })
+  
   useEffect(() => {
-    setReportOverviewLoading(true)
-    $api.overviewService.getReportOverviewByAtda(atda, valType, previousMonth)
-        .then(({ data }) => {
-          // console.log(data)
-          setReportOverviewLoading(false)
-          setReportOverviewByAtda(data)
-        }).catch(err => {
-        const message = err?.response?.data.error.message || err.message;
-        addToast($message({ header: 'Tracteur par Atda', message }), { appearance: 'error', autoDismiss: true })
-      })
-  }, [$api.overviewService, $message, addToast, atda, previousMonth, valType])
+    if (overviewByAtdaLoading) {
+      setReportOverviewLoading(true)
+    }
+    else {
+      setReportOverviewLoading(false)
+      setReportOverviewByAtda(overviewByAtda)
+    }
+    
+    if (overviewTractorLoading) {
+      setTractorOverviewLoading(true)
+    }
+    else {
+      setTractorOverviewLoading(false)
+      setTractorOverview(overviewTractor)
+    }
+  }, [overviewByAtda, overviewByAtdaLoading, overviewTractor, overviewTractorLoading])
 
-  useEffect(() => {
-    setTractorOverviewLoading(true)
-    $api.overviewService.getTractorOverview()
-        .then(({ data }) => {
-          // console.log(data)
-          setTractorOverviewLoading(false)
-          setTractorOverview(data)
-        }).catch(err => {
-        const message = err?.response?.data.error.message || err.message;
-        addToast($message({ header: 'Tracteur par Atda', message }), { appearance: 'error', autoDismiss: true })
-      })
-  }, [$api.overviewService, $message, addToast])
 
   const optionssalesummary = {
     chart: {
@@ -146,13 +140,21 @@ const SalesSummary = () => {
     },
   ];
 
+  const currentMonth = (nth = 0) => {
+    moment.locale('fr')
+    const month = moment().subtract(nth, 'months')
+    const monthHuman = month.format("DD-MMMM-YYYY").split('-')[1]
+    const monthNumber = month.get("months")
+    return { monthNumber, monthHuman: monthHuman.charAt(0).toUpperCase() + monthHuman.slice(1) }
+  }
+
   return (
     <Card>
       <CardBody>
         <div className="d-md-flex align-items-center">
           <div>
-            <CardTitle>Apercu General</CardTitle>
-            <CardSubtitle>Apercu du mois courant</CardSubtitle>
+            <CardTitle>Apercu Général de { currentMonth(previousMonth).monthHuman }</CardTitle>
+            {/* <CardSubtitle>Apercu de </CardSubtitle> */}
           </div>
           <div className="ml-auto d-flex no-block align-items-center">
             <ul className="list-inline font-12 dl mr-3 mb-0">
@@ -174,20 +176,22 @@ const SalesSummary = () => {
           </div>
         </div>
         <Row>
-          <Col lg="4">
+          <Col lg="4" className='flex flex-col'>
             {
               tractorOverviewLoading ?
               <div className="d-flex justify-content-center h-100 align-items-center">
                 <Spinner className="ml-2" size="lg" color="primary" style={{width: '6rem', height: '6rem'}}></Spinner>
               </div> :
               <>
-                <h1 className="mb-0 mt-4">699</h1>
-                <h6 className="font-light text-muted">Nombre de trateur total</h6>
-                <h3 className="mt-4 mb-0">{ tractorOverview.tractorTotal }</h3>
-                <h6 className="font-light text-muted">Tracteurs traces</h6>
-                <div className="flex space-x-4">
-                  <button className="btn btn-info p-3 px-4" onClick={ () => setPreviousMonth(true) }> Apercu mois précédent </button>
-                  <button className="btn btn-secondary p-3 px-4 " onClick={ () => setPreviousMonth(false) }> Apercu mois actuel </button>
+                {/* <h1 className="mb-0 mt-4">699</h1>
+                <h6 className="font-light text-muted">Nombre de trateur total</h6> */}
+                <div className='my-auto'>
+                  <h1 className="mt-8 mb-0">{ tractorOverview.tractorTotal }</h1>
+                  <h4 className="font-light text-muted">Tracteurs tracés</h4>
+                </div>
+                <div className="flex space-x-4 mt-auto">
+                  <button className="btn btn-info p-3 px-4" disabled={currentMonth(previousMonth).monthNumber === 0} onClick={ () => setPreviousMonth( state => ++state) }> Apercu mois précédent </button>
+                  <button className="btn btn-secondary p-3 px-4" disabled={currentMonth(previousMonth).monthNumber === moment().get("months")} onClick={ () => setPreviousMonth( state => --state) }> Apercu mois suivant </button>
                 </div>
               </>
             }    
@@ -215,7 +219,7 @@ const SalesSummary = () => {
           </Col>
         </Row>
       </CardBody>
-      <CardBody className="border-top">
+      {/* <CardBody className="border-top">
         <Row className="mb-0">
           <Col lg="3" md="6">
             <S.Statistics
@@ -250,7 +254,7 @@ const SalesSummary = () => {
             />
           </Col>
         </Row>
-      </CardBody>
+      </CardBody> */}
     </Card>
   );
 };

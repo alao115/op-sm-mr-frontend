@@ -1,36 +1,32 @@
 import React, { useState, useEffect } from "react";
-import { useSelector } from 'react-redux'
 import { CardTitle, Row, Button, ButtonGroup, CardBody, Spinner, Input } from "reactstrap";
-import { useToasts } from 'react-toast-notifications'
 import TractorsTable from "../../components/machines/tractorsTable";
+import useFetchResource from '../../hooks/useFetchResource'
 
 export default function TractorByATDA(props) {
-  const { $api, $message } = useSelector(state => state)
   const [tractors, setTractors] = useState([]);
   const [currentATDA, setCurrentATDA] = useState(1)
   const [loading, setLoading] = useState(false)
   const [atda, setAtda] = useState(1)
   const [search, setSearch] = useState('')  
   const [filterTractors, setFilterTractors] = useState([])
-  const { addToast } = useToasts()
 
-
-  useEffect(() => {
-    setLoading(true)
-    $api.tractorService.getAllByAtda(atda).then((response) => {
-      // setTractors((response.data || []));
-      response.data && setTractors(response.data);
-    }).catch(err =>  addToast($message({ header: 'Liste tracteurs par ATDA', message: "Une erreur s'est produite. Veuillez reessayer." }), { appearance: "error", autoDismiss: true }))
-      .finally(() => setLoading(false));
-  }, [atda, $api, $message, addToast]);
+  const { resourceData: tractorsData, loadingState: tractorsDataLoading } = useFetchResource({ errorHeader: "Liste tracteurs par ATDA", resourceService: "tractorService", action: "getAllByAtda", params: atda })
 
   useEffect(() => {
+    if (tractorsDataLoading) {
+      setLoading(true)
+    } else {
+      setLoading(false)
+      setTractors(tractorsData)
+    }
+
     let results = []
     if(search) {
       results = tractors.filter(tractor => `${tractor.user.firstName} ${tractor.user.lastName}`.toLowerCase().trim().includes(search.toLowerCase().trim()) || tractor.tractor.id.toLowerCase().includes(search.toLowerCase().trim()) || tractor.user.phone.toLowerCase().includes(search.toLowerCase().trim()) )
     } else results = tractors
     setFilterTractors(results)
-  }, [search, tractors])
+  }, [search, tractors, tractorsData, tractorsDataLoading])
 
   return (
     <>

@@ -11,7 +11,7 @@ const Notes = lazy(() => import("../views/notes/Notes"));
 const tractorsHS = lazy(() => import('../views/machines/tractorsHS'))
 const listTractors = lazy(() => import("../views/machines/tractors/tractorsList"))
 const listTractorsByATDA = lazy(() => import("../views/machines/tractorsByATDA"))
-const NewTractors = lazy(() => import("../views/machines/addNew"))
+const NewTractors = lazy(() => import("../views/machines/editAddTractor"))
 const NewVidanges = lazy(() => import("../views/vidange/addNew"))
 const EntretienDus = lazy(() => import("../views/vidange/entretienDus"))
 const Logs = lazy(() => import("../views/crons/logs"))

@@ -5,12 +5,13 @@ import { useToasts } from 'react-toast-notifications'
 import ExportToExcel from '../../components/exportToExcel/exportToExcel'
 import { saveAs } from 'file-saver'
 import moment from 'moment';
+import useFetchResource from '../../hooks/useFetchResource'
 
 export default function TractorHS() {
 
   const { $api, $message } = useSelector(state => state)
   const [tractors, setTractors] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [downloadLoading, setDownloadLoading] = useState(false);
   const [disabledDownloadBtn, setDisabledDownloadBtn] = useState(false);
   const { addToast } = useToasts()
@@ -18,24 +19,43 @@ export default function TractorHS() {
   const [filterTractors, setFilterTractors] = useState([])
   const [sortedOrder, setSortOrder] = useState('')
 
-  useEffect(() => {
-    $api.tractorService.getTractorHS()
-      .then(({ data }) => {
-        setLoading(false)
-        const tr = data.tractors || []
-        setTractors(tr)
-        setSortOrder('asc')
-      }).catch(err =>  addToast($message({ header: 'Liste tracteurs hors service', message: "Une erreur s'est produite. Veuillez reessayer." }), { appearance: "error", autoDismiss: true }));
+  const { resourceData: tractorsHSData, loadingState: tractorsHSDataLoading } = useFetchResource({ errorHeader: "Liste tracteurs hors service", resourceService: "tractorService", action: "getTractorHS" })
 
-    return () => {
-      setTractors([])
+  useEffect(() => {
+    if (tractorsHSDataLoading) {
+      setLoading(true)
+    } else {
+      setLoading(false)
+      setTractors(tractorsHSData.tractors || [])
+      console.log('Setting sort order ')
+      setSortOrder('asc')
     }
-  }, 
-  [$api.tractorService, $message, addToast])
+    
+    // setFilterTractors(tractors)
+  }, [tractors, tractorsHSData, tractorsHSDataLoading])
 
   useEffect(() => {
     setFilterTractors(tractors)
   }, [tractors])
+
+  useEffect(() => {
+    let results = []
+    if(search) {
+      results = tractors.filter(tractor => `${tractor.user.firstName} ${tractor.user.lastName}`.toLowerCase().trim().includes(search.toLowerCase().trim()) || tractor.tractor.id.toLowerCase().includes(search.toLowerCase().trim()))
+    } else results = tractors
+    setFilterTractors(results)
+  }, [search, tractors])
+
+  useEffect(() => {
+    console.log(sortedOrder)
+    const results = tractors.sort((t1, t2) => {
+      const a = moment(t1.lastReport, "DD-MM-YYYY").unix()
+      const b = moment(t2.lastReport, "DD-MM-YYYY").unix()
+      return sortedOrder === 'asc' ? a - b : b - a
+    })
+    
+    setFilterTractors(results)
+  }, [sortedOrder, tractors, tractorsHSDataLoading])
 
   async function exportToExcel() {
     try {
@@ -53,24 +73,6 @@ export default function TractorHS() {
     }
   }
 
-  useEffect(() => {
-    let results = []
-    if(search) {
-      results = tractors.filter(tractor => `${tractor.user.firstName} ${tractor.user.lastName}`.toLowerCase().trim().includes(search.toLowerCase().trim()) || tractor.tractor.id.toLowerCase().includes(search.toLowerCase().trim()))
-    } else results = tractors
-    setFilterTractors(results)
-  }, [search, tractors])
-
-  useEffect(() => {
-    const results = tractors.sort((t1, t2) => {
-      const a = moment(t1.lastReport, "DD-MM-YYYY").unix()
-      const b = moment(t2.lastReport, "DD-MM-YYYY").unix()
-      return sortedOrder === 'asc' ? a - b : b - a
-    })
-    
-    setFilterTractors(results)
-  }, [sortedOrder, tractors])
-  
   return (
     <Row>
       <Col lg="12">

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   InputGroup,
   InputGroupAddon,
@@ -16,6 +16,7 @@ import * as Yup from "yup";
 import { useSelector } from 'react-redux'
 import useAuth from '../../hooks/useAuth';
 import { useLocation, useNavigate } from 'react-router-dom'
+import { CustomTextInput } from '../../components/forms/customInputs'
 
 const sidebarBackground = {
   backgroundImage: "url(" + img2 + ")",
@@ -29,6 +30,8 @@ const Login = (props) => {
   const { loginFn } = useAuth(ctx => ctx)
   const location = useLocation()
   const navigate = useNavigate()
+  const [isSubmitting, setSubmitting] = useState(false)
+  const [status, setStatus] = useState('')
   return (
     <div className="">
       {/*--------------------------------------------------------------------------------*/}
@@ -45,9 +48,6 @@ const Login = (props) => {
                 <img src={img1} alt="logo" />
               </span>
               <h5 className="font-medium mb-3">Sign In to Admin</h5>
-              {/* <div className="alert alert-success">
-                Username: test & Password: test
-              </div> */}
             </div>
             <Row>
               <Col xs="12">
@@ -60,18 +60,12 @@ const Login = (props) => {
                     username: Yup.string().required("Email is required"),
                     password: Yup.string().required("Password is required"),
                   })}
-                  onSubmit={(
-                    { username, password },
-                    { setStatus, setSubmitting }
-                  ) => {
+                  onSubmit={({ username, password }, ) => {
                     setStatus();
                     $api.authService.signin({ email: username, password }).then(
                       (response) => {
                         loginFn(response.data.data);
-                        // dispatch({ type: '$authData/setToken', value: response.data.data.accessToken })
-
                         const { from } = location.state || { from: { pathname: "/" } };
-                        console.log(location)
                         navigate((from || {pathname: "/"}));
                       },
                       (error) => {
@@ -79,68 +73,21 @@ const Login = (props) => {
                         setStatus(error?.response?.data.error.message || error.message);
                       }
                     );
-                  }}
-                  render={({ errors, status, touched, isSubmitting }) => (
+                  }}>
                     <Form className="mt-3" id="loginform">
-                      <InputGroup className="mb-3">
-                          <InputGroupText>
-                            <i className="ti-user"></i>
-                          </InputGroupText>
-
-                        <Field
-                          name="username"
-                          type="text"
-                          className={
-                            "form-control" +
-                            (errors.username && touched.username
-                              ? " is-invalid"
-                              : "")
-                          }
-                        />
-                        <ErrorMessage
-                          name="username"
-                          component="div"
-                          className="invalid-feedback"
-                        />
-                      </InputGroup>
-                      <InputGroup className="mb-3">
-                          <InputGroupText>
-                            <i className="ti-pencil"></i>
-                          </InputGroupText>
-                        <Field
-                          name="password"
-                          type="password"
-                          className={
-                            "form-control" +
-                            (errors.password && touched.password
-                              ? " is-invalid"
-                              : "")
-                          }
-                        />
-                        <ErrorMessage
-                          name="password"
-                          component="div"
-                          className="invalid-feedback"
-                        />
-                      </InputGroup>
-                      {/* <div className="d-flex no-block align-items-center mb-3">
-                        <CustomInput
-                          type="checkbox"
-                          id="exampleCustomCheckbox"
-                          label="Remember Me"
-                        />
-                        <div className="ml-auto">
-                          <a
-                            href="#recoverform"
-                            id="to-recover"
-                            onClick={handleClick.bind(null)}
-                            className="forgot text-dark float-right"
-                          >
-                            <i className="fa fa-lock mr-1"></i> Forgot pwd?
-                          </a>
-                        </div>
-                      </div> */}
-                      <Row className="mb-3">
+                      <div className="flex w-full mb-2">
+                        <InputGroupText className='rounded-r-none'>
+                          <i className="ti-user"></i>
+                        </InputGroupText>
+                        <CustomTextInput className="w-full" innerInputClassName="rounded-l-none border-l-0" name="username" type="text" />
+                      </div>
+                      <div className="w-full flex mb-2">
+                        <InputGroupText className='rounded-r-none'>
+                          <i className="ti-lock"></i>
+                        </InputGroupText>
+                        <CustomTextInput className='w-11/12' innerInputClassName="rounded-l-none border-l-0" name="password" type="password" />
+                      </div>
+                      <Row className="mb-3 mt-4">
                         <Col xs="12">
                           <button
                             type="submit"
@@ -161,12 +108,11 @@ const Login = (props) => {
                         <div className={"alert alert-danger"}>{status}</div>
                       )}
                     </Form>
-                  )}
-                />
+                </Formik>
               </Col>
             </Row>
           </div>
-          <div id="recoverform">
+          {/* <div id="recoverform">
             <div className="logo">
               <span className="db">
                 <img src={img1} alt="logo" />
@@ -199,7 +145,7 @@ const Login = (props) => {
                 </Form>
               </Col>
             </Row>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

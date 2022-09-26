@@ -13,12 +13,13 @@ export default function VidangeEntretienDu(props) {
   useEffect(() => {
     $api.maintenanceService.getAllCheckMaintenances()
       .then(({ data }) => {
-        data && setTractors(data);
+        setTractors((data || []));
+        // console.log(data)
       }).catch(err => {
         const message = err?.response?.data.error.message || err.message;
         addToast($message({ header: 'Liste entretien dues', message }), { appearance: 'error', autoDismiss: true })
       })
   }, [$api, $message, addToast]);
 
-  return <EntretienTable tractors={tractors}></EntretienTable>
+  return tractors.length > 0 && <EntretienTable tractors={tractors}></EntretienTable>
 };

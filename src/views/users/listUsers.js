@@ -5,6 +5,7 @@ import { Card, CardTitle, CardBody, Table, Row, Col } from "reactstrap";
 import Switch from "react-bootstrap-switch";
 import "react-bootstrap-switch/dist/css/bootstrap3/react-bootstrap-switch.min.css";
 import useAuth from '../../hooks/useAuth';
+import useFetchResource from '../../hooks/useFetchResource'
 
 
 export default function ListUser(props) {
@@ -13,16 +14,14 @@ export default function ListUser(props) {
   const { addToast } = useToasts()
   const { authUser } = useAuth(ctx => ctx)
 
-  useEffect(() => {
-    $api.adminService.getAll()
-      .then(({ data }) => {
-        data && setUsers(data)
-      }).catch(err => {
-        const message = err?.response?.data.error.message || err.message;
-        addToast($message({ header: 'Liste utilisateurs', message }), { appearance: 'error', autoDismiss: true })
-      })
-  }, [$api, $message, addToast]);
+  const { resourceData: userData, loadingState: userDataLoading } = useFetchResource({ errorHeader: "Liste des utilisateurs", resourceService: "adminService", action: "getAll" })
 
+  useEffect(() => {
+    if (!userDataLoading) {
+      setUsers(userData)
+    }
+  }, [userData, userDataLoading])
+ 
   async function changeUserState (e, user) {
     try {
       await $api.adminService.update(user.id, { isActivated: e })

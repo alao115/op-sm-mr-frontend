@@ -21,6 +21,7 @@ import { useSelector } from 'react-redux'
 import { useToasts } from 'react-toast-notifications'
 import AutoCompletion from '../../components/autocompletion/AutoCompletionInput'
 import ExportToExcel from '../../components/exportToExcel/exportToExcel'
+import useFetchResource from '../../hooks/useFetchResource'
 
 export default function ReportStat(props) {
   const { $api, $message } = useSelector(state => state)
@@ -34,6 +35,7 @@ export default function ReportStat(props) {
   const [tractors, setTractors] = useState([]);
   const { addToast } = useToasts()
   const [message, setMessage] = useState('Exécutez un rapport!')
+  const [autoCompletionData, setAutoCompletionData] = useState([])
 
   function setExecuteReportState(report) {
     setSubmitExecuteReportState(!report.from || !report.to || moment(report.from, "YYYY-MM-DD").isAfter(moment(report.to, "YYYY-MM-DD")))
@@ -63,21 +65,29 @@ export default function ReportStat(props) {
 
   const [reportData, dispatch] = useReducer(reportReducer, { atda: '', id: '', from: '', to: ''})
 
-  useEffect(() => {
-    setTractorLoading(true)
-    $api.tractorService.getAll().then((response) => {
-      setTractors(response.data || []);
-    }).finally(() => setTractorLoading(false));
-  }, [$api.tractorService]);
+  const { resourceData: tractorsData, loadingState: tractorsDataLoading } = useFetchResource({ errorHeader: "Liste des tracteurs", resourceService: "tractorService", action: "getAll" })
 
   useEffect(() => {
-      setDisabledDownloadBtn(!!!filename)
-  }, [filename])
+    if (tractorsDataLoading) {
+      setTractorLoading(true)
+    } else {
+      setTractors(tractorsData)
+      setTractorLoading(false)
+    }
 
-  useEffect(() => {
     if (moment(reportData.from, "YYYY-MM-DD").isAfter(moment(reportData.to, "YYYY-MM-DD")))
       addToast($message({ header: 'Execution rapport', message: "Date début est superieur à date fin" }), { appearance: 'error', autoDismiss: true })
-  }, [$message, addToast, reportData.from, reportData.to])
+
+    if(filename) {
+      setDisabledDownloadBtn(!!!filename)
+    }
+
+    setAutoCompletionData([ { label: 'Tout', value: '' }, ...tractors?.map(tractor => ({ label: `${tractor.tractor.id}: ${tractor.user.lastName} ${tractor.user.firstName}`, value: tractor.tractor.id }))])
+
+  }, [$message, addToast, filename, reportData.from, reportData.to, tractors, tractorsData, tractorsDataLoading])
+
+  // useEffect(() => {
+  // }, [tractors])
 
   async function executeReport(e) {
     try {
@@ -140,12 +150,13 @@ export default function ReportStat(props) {
                     <Label for="">ATDA: </Label>
                     <Input type="select" value={reportData.atda} onChange={ (e) => dispatch({ type: 'setAtda', value: e.target.value }) } disabled={reportData.id} >
                       <option value="">Selectionner un atda</option>
+                      <option value="0">Tout les atda</option>
                       {[1, 2, 3, 4, 5, 6, 7].map((atda) => ( <option key={atda} value={atda}> {`ATDA ${atda}`} </option>))}
                     </Input>
                   </FormGroup>
                 </Col>
                 <Col md="3">
-                  <AutoCompletion placeholder="Selectionner un tracteur" label='Tracteur' onChange={ (e) => dispatch({ type: 'setTractor', value: e.value }) } suggestions={ reportData.atda ? [] : [ { label: 'Tout', value: '' }, ...tractors.map(tractor => ({ label: `${tractor.tractor.id}: ${tractor.user.lastName} ${tractor.user.firstName}`, value: tractor.tractor.id }))] } disabled={!!reportData.atda} />
+                  <AutoCompletion placeholder="Selectionner un tracteur" label='Tracteur' onChange={ (e) => dispatch({ type: 'setTractor', value: e.value }) } suggestions={ reportData.atda ? [] : autoCompletionData } disabled={!!reportData.atda} />
                 </Col>
                 <Col md="3">
                   <FormGroup>
@@ -203,19 +214,17 @@ export default function ReportStat(props) {
                         <th className="border-0">Heure moteur totale</th>
                         <th className="border-0">Vitesse totale</th>
                         <th className="border-0">Distance totale</th>
-                        {/* <th className="border-0">Message</th>
-                        <th className="border-0">Details</th> */}
                       </tr>
                     </thead>
                     <tbody>
-                      {reports.map((report, index) => {
+                      {reports.filter(re => re.atda).sort((r1, r2) => parseInt(r1.atda) - parseInt(r2.atda) ).map((report, index) => {
                         return (
                           <tr key={index}>
                             <td>
                               <div className="d-flex no-block align-items-center">
                                 <div className="">
                                   <h5 className="mb-0 font-16 font-medium">
-                                    {report.ATDA}
+                                    {report.ATDA || report.atda}
                                   </h5>
                                 </div>
                               </div>
@@ -224,9 +233,6 @@ export default function ReportStat(props) {
                             <td>{report.heure_moteurs}</td>
                             <td> {report.vitesses} </td>
                             <td> {report.distances} </td>
-                            {/* <td>
-                              <span> Non renseigné </span>
-                            </td> */}
                           </tr>
                         );
                       })}
@@ -242,8 +248,6 @@ export default function ReportStat(props) {
                         <th className="border-0">Vitesse moyenne</th>
                         <th className="border-0">Distance totale</th>
                         <th className="border-0">Distance moyenne</th>
-                        {/* <th className="border-0">Message</th>
-                        <th className="border-0">Details</th> */}
                       </tr>
                     </thead>
                     <tbody>
@@ -265,9 +269,6 @@ export default function ReportStat(props) {
                             <td>{report.vitesseMoyenne}</td>
                             <td> {report.distance} </td>
                             <td> {report.distanceMoyenne} </td>
-                            {/* <td>
-                              <span> Non renseigné </span>
-                            </td> */}
                           </tr>
                         );
                       })}

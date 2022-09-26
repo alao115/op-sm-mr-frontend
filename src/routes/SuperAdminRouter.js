@@ -90,8 +90,9 @@ const Classic = lazy(() => import("../views/dashboards/Classic"));
 const TractorsListLayout = lazy(() => import("../views/machines/tractors/tractorLayout"));
 const TractorsList = lazy(() => import("../views/machines/tractors/tractorsList"));
 const TractorMedicalBook = lazy(() => import("../views/machines/tractors/medicalBook"));
+const EditAddTractor = lazy(() => import("../views/machines/editAddTractor"));
 const listTractorsByATDA = lazy(() => import("../views/machines/tractorsByATDA"));
-const NewTractors = lazy(() => import("../views/machines/addNew"));
+const NewTractors = lazy(() => import("../views/machines/editAddTractor"));
 const NewVidanges = lazy(() => import("../views/vidange/addNew"));
 const EntretienDus = lazy(() => import("../views/vidange/entretienDus"));
 const Logs = lazy(() => import("../views/crons/logs"));
@@ -128,12 +129,12 @@ var ThemeRoutes = [
     state: "tracteurs",
     icon: "truck",
     child: [
-      {
-        path: "/tracteurs/ajoutertracteur",
-        name: "Ajouter un Nouveau Tracteur",
-        icon: "mdi mdi-cards-variant",
-        component: NewTractors,
-      },
+      // {
+      //   path: "/tracteurs/ajoutertracteur",
+      //   name: "Ajouter un Nouveau Tracteur",
+      //   icon: "mdi mdi-cards-variant",
+      //   component: NewTractors,
+      // },
       {
         path: "/tracteurs/",
         name: "Liste",
@@ -149,6 +150,10 @@ var ThemeRoutes = [
             path: "carnet/:tractorChassis",
             component: TractorMedicalBook,
           },
+          {
+            path: "edit/:tractorChassis",
+            component: EditAddTractor
+          }
         ],
       },
 

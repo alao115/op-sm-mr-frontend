@@ -9,11 +9,12 @@ export default function useFetchResource({
   action,
 }) {
   const [resourceData, setResourceData] = useState([]);
-  const [loadingState, setLoadingState] = useState(true);
+  const [loadingState, setLoadingState] = useState(false);
   const { $api, $message } = useSelector((state) => state);
   const { addToast } = useToasts();
 
   useEffect(() => {
+    setLoadingState(true)
     $api[resourceService][action](params ? params : null)
       .then(({ data }) => {
         data && setResourceData(data);
@@ -28,8 +29,7 @@ export default function useFetchResource({
       .finally(() => {
         setLoadingState(false);
       });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [$api, $message, action, addToast, errorHeader, resourceService]);
+  }, [$api, $message, action, addToast, errorHeader, params, resourceService]);
 
   return { resourceData, loadingState };
 }

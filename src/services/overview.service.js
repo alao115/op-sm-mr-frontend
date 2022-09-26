@@ -4,7 +4,7 @@ export default function overviewService({ serviceName, http }) {
       return http.get(`/${serviceName}/tractorByAtda`);
     }
 
-    getReportOverviewByAtda(atda, valType, previousMonth) {
+    getReportOverviewByAtda({ atda, valType, previousMonth }) {
       return http.post(`/${serviceName}/reportOverviewByAtda`, { atda, isAverage: valType, previousMonth });
     }
 

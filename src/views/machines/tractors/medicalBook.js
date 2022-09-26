@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useParams, useLocation } from "react-router-dom";
 import { Card, } from "reactstrap";
 import { useDispatch } from 'react-redux'
@@ -7,50 +7,15 @@ import Tab from "../../../components/Tab/Tab";
 import useFetchResource from '../../../hooks/useFetchResource';
 import { setInterventionDetailPanel } from '../../../redux/settings/Action'
 
-const tabDataTmp = {
-  Recent: [
-    {
-      id: 1,
-      title: "Does drinking coffee make you smarter?",
-      date: "5h ago",
-      commentCount: 5,
-      shareCount: 2,
-    },
-    {
-      id: 2,
-      title: "So you've bought coffee... now what?",
-      date: "2h ago",
-      commentCount: 3,
-      shareCount: 2,
-    },
-  ],
-  Popular: [
-    {
-      id: 1,
-      title: "Is tech making coffee better or worse?",
-      date: "Jan 7",
-      commentCount: 29,
-      shareCount: 16,
-    },
-    {
-      id: 2,
-      title: "The most innovative things happening in coffee",
-      date: "Mar 19",
-      commentCount: 24,
-      shareCount: 12,
-    },
-  ],
-};
-
 const MedicalBook = (props) => {
   const { tractorChassis } = useParams();
   const { state } = useLocation();
   const { tractor } = state;
 
   const dispatch = useDispatch();
-
-  const { resourceData: Interventions, loadingState: interventionLoadingState } = useFetchResource({ errorHeader: "Liste interventions", resourceService: 'interventionService', action: 'getAllByTractor', params: { tractor: tractor.tractor.id } })
-  const { resourceData: Maintenances, loadingState: maintenanceLoadingState } = useFetchResource({ errorHeader: "Liste maintenances", resourceService: 'maintenanceService', action: 'getAllByTractor', params: { tractor: tractor.tractor.id } })
+  const params = useMemo(() => ({ tractor: tractor.id }), [tractor.id])
+  const { resourceData: Interventions, loadingState: interventionLoadingState } = useFetchResource({ errorHeader: "Liste interventions", resourceService: 'interventionService', action: 'getAllByTractor', params })
+  const { resourceData: Maintenances, loadingState: maintenanceLoadingState } = useFetchResource({ errorHeader: "Liste maintenances", resourceService: 'maintenanceService', action: 'getAllByTractor', params })
   const [tabData, setTabData ] = useState({})
   
 
@@ -91,7 +56,7 @@ const MedicalBook = (props) => {
             >
               <div className="w-full flex flex-col justify-between">
                 { post.description && <h3 className="text-sm font-semibold leading-5 truncate overflow-ellipsis capitalize">{post.description}</h3> }
-                <h6 className="text-gray-400 font-semiboold text-xs inline p-[.2rem] pl-0 rounded-md w-fit">{ post.description ? `Mécanicien: ${post.mechanical}` : `Nom & Prénom: ${post.user.firstName} ${post.user.lastName}` }</h6>
+                <h6 className="text-gray-400 font-semiboold text-xs inline p-[.2rem] pl-0 rounded-md w-fit">{ post.description ? `Mécanicien: ${post.mechanical}` : `Nom & Prénom: ${post.user?.firstName} ${post.user?.lastName}` }</h6>
                 { 
                   !post.description && 
                   <>
@@ -103,8 +68,13 @@ const MedicalBook = (props) => {
               
 
               <ul className="mt-1 flex space-x-1 text-xs font-normal leading-4 text-gray-500">
-                <li><span className='font-bold text-gray-500'>{post.tractor}</span></li>
-                <li>&middot;</li>
+                {/* {
+                  post.description && 
+                  <>
+                    <li><span className='font-bold text-gray-500'>{post.tractor.id}---</span></li>
+                    <li>&middot;</li>
+                  </>
+                } */}
                 <li><span className='text-slate-400'>{moment.unix(post.date).format("DD-MM-YYYY")}</span></li>
                 <li>&middot;</li>
                 <li>
