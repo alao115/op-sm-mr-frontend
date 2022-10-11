@@ -66,7 +66,7 @@ export default function ReportStat(props) {
 
   const [reportData, dispatch] = useReducer(reportReducer, { atda: '', id: '', from: '', to: ''})
 
-  const params = useMemo(() => ({ page: 0, limit: Number.POSITIVE_INFINITY}), [])
+  const params = useMemo(() => ({ page: 0, limit: Number.MAX_VALUE}), [])
   const { resourceData: tractorsData, loadingState: tractorsDataLoading } = useFetchResource({ initialState: { data: [] }, errorHeader: "Liste des tracteurs", resourceService: "tractorService", action: "getAll", params })
 
   useEffect(() => {

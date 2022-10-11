@@ -30,7 +30,7 @@ const NewFailure = () => {
   const [users, setUsers] = useState([]);
 
 
-  const params = useMemo(() => ({ page: 0, limit: Number.POSITIVE_INFINITY}), [])
+  const params = useMemo(() => ({ page: 0, limit: Number.MAX_VALUE}), [])
   const { resourceData: tractorsData, loadingState: tractorsDataLoading } = useFetchResource({ initialState: { data: [] }, errorHeader: "Liste des tracteurs", resourceService: "tractorService", action: "getAll", params })
   const { resourceData: usersData, loadingState: usersDataLoading } = useFetchResource({ errorHeader: "Liste des mécaniciens", resourceService: "userService", action: "getAll", params })
 
