@@ -14,7 +14,7 @@ export default function TractorByATDA(props) {
   const { resourceData: tractorsData, loadingState: tractorsDataLoading } = useFetchResource({ errorHeader: "Liste tracteurs par ATDA", resourceService: "tractorService", action: "getAllByAtda", params: atda })
 
   useEffect(() => {
-    if (tractorsDataLoading) {
+    if (tractorsDataLoading && !tractorsData.length) {
       setLoading(true)
     } else {
       setLoading(false)

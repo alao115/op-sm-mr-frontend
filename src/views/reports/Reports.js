@@ -22,6 +22,7 @@ import AutoCompletion from '../../components/autocompletion/AutoCompletionInput'
 import ExportToExcel from '../../components/exportToExcel/exportToExcel'
 import { saveAs } from 'file-saver'
 import useFetchResource from '../../hooks/useFetchResource'
+import { useMemo } from 'react'
 
 export default function Reports(props) {
   const { $api, $message } = useSelector(state => state)
@@ -59,15 +60,17 @@ export default function Reports(props) {
 
   const [reportData, dispatch] = useReducer(reportReducer, { tractor: '', from: '', to: '' })
 
-  const { resourceData: tractorsData, loadingState: tractorsDataLoading } = useFetchResource({ errorHeader: "Liste des tracteurs", resourceService: "tractorService", action: "getAll" })
+  const params = useMemo(() => ({ page: 0, limit: Number.POSITIVE_INFINITY}), [])
+  const { resourceData: tractorsData, loadingState: tractorsDataLoading } = useFetchResource({ initialState: { data: [] }, errorHeader: "Liste des tracteurs", resourceService: "tractorService", action: "getAll", params })
 
   useEffect(() => {
-    if (tractorsDataLoading) {
+    if (tractorsDataLoading && !tractorsData.data.length) {
       setTractorLoading(true)
     } else {
-      setTractors(tractorsData)
+      setTractors(tractorsData.data)
       setTractorLoading(false)
     }
+
     if (moment(reportData.from, "YYYY-MM-DD").isAfter(moment(reportData.to, "YYYY-MM-DD")))
       addToast($message({ header: 'Execution rapport', message: "Date début est superieur à date fin" }), { appearance: 'error', autoDismiss: true })
   }, [$message, addToast, reportData.from, reportData.to, tractorsData, tractorsDataLoading])
@@ -124,7 +127,7 @@ export default function Reports(props) {
             <Form onSubmit={executeReport}>
               <Row>
                 <Col md="4">
-                  <AutoCompletion placeholder="Selectionner un tracteur" label='Tracteur' onChange={ (e) => dispatch({ type: 'setTractor', value: e.value }) } suggestions={ [ { label: 'Tout', value: '' }, ...tractors?.map(tractor => ({ label: `${tractor.tractor.id}: ${tractor.user.lastName} ${tractor.user.firstName}`, value: { emei: tractor.tractor.emeiTracteur,tractorID: tractor.tractor.id } }))] }/>
+                  <AutoCompletion placeholder="Selectionner un tracteur" label='Tracteur' onChange={ (e) => dispatch({ type: 'setTractor', value: e.value }) } suggestions={ [ { label: 'Tout', value: '' }, ...tractors?.map(tractor => ({ label: `${tractor.id}: ${tractor.user.lastName} ${tractor.user.firstName}`, value: { emei: tractor.emeiTracteur,tractorID: tractor.id } }))] }/>
                 </Col>
                 <Col md="4">
                   <FormGroup>

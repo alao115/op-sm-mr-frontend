@@ -1,25 +1,20 @@
-import React, { useState, useEffect } from "react";
-import { useSelector } from 'react-redux'
-import { useToasts } from 'react-toast-notifications';
+import React, { useState, useEffect, } from "react";
 
 import EntretienTable from '../../components/vidanges/entretienTable';
+import useFetchResource from '../../hooks/useFetchResource'
 
 
 export default function VidangeEntretienDu(props) {
   const [tractors, setTractors] = useState([]);
-  const { $api, $message } = useSelector((state) => state);
-  const { addToast } = useToasts()
+
+  const { resourceData: tractorsData, loadingState: tractorsDataLoading } = useFetchResource({ errorHeader: "Liste entretien dues", resourceService: "maintenanceService", action: "getAllCheckMaintenances" })
 
   useEffect(() => {
-    $api.maintenanceService.getAllCheckMaintenances()
-      .then(({ data }) => {
-        setTractors((data || []));
-        // console.log(data)
-      }).catch(err => {
-        const message = err?.response?.data.error.message || err.message;
-        addToast($message({ header: 'Liste entretien dues', message }), { appearance: 'error', autoDismiss: true })
-      })
-  }, [$api, $message, addToast]);
+    if (tractorsDataLoading && !tractorsData.length) {
+    } else {
+      setTractors(tractorsData)
+    }
+  }, [tractorsData, tractorsDataLoading])
 
   return tractors.length > 0 && <EntretienTable tractors={tractors}></EntretienTable>
 };

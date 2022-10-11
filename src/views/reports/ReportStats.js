@@ -22,6 +22,7 @@ import { useToasts } from 'react-toast-notifications'
 import AutoCompletion from '../../components/autocompletion/AutoCompletionInput'
 import ExportToExcel from '../../components/exportToExcel/exportToExcel'
 import useFetchResource from '../../hooks/useFetchResource'
+import { useMemo } from 'react'
 
 export default function ReportStat(props) {
   const { $api, $message } = useSelector(state => state)
@@ -65,13 +66,14 @@ export default function ReportStat(props) {
 
   const [reportData, dispatch] = useReducer(reportReducer, { atda: '', id: '', from: '', to: ''})
 
-  const { resourceData: tractorsData, loadingState: tractorsDataLoading } = useFetchResource({ errorHeader: "Liste des tracteurs", resourceService: "tractorService", action: "getAll" })
+  const params = useMemo(() => ({ page: 0, limit: Number.POSITIVE_INFINITY}), [])
+  const { resourceData: tractorsData, loadingState: tractorsDataLoading } = useFetchResource({ initialState: { data: [] }, errorHeader: "Liste des tracteurs", resourceService: "tractorService", action: "getAll", params })
 
   useEffect(() => {
-    if (tractorsDataLoading) {
+    if (tractorsDataLoading && !tractorsData.data.length) {
       setTractorLoading(true)
     } else {
-      setTractors(tractorsData)
+      setTractors(tractorsData.data)
       setTractorLoading(false)
     }
 
@@ -82,7 +84,8 @@ export default function ReportStat(props) {
       setDisabledDownloadBtn(!!!filename)
     }
 
-    setAutoCompletionData([ { label: 'Tout', value: '' }, ...tractors?.map(tractor => ({ label: `${tractor.tractor.id}: ${tractor.user.lastName} ${tractor.user.firstName}`, value: tractor.tractor.id }))])
+    if (tractors.length > 0)
+      setAutoCompletionData([ { label: 'Tout', value: '' }, ...tractors?.map(tractor => ({ label: `${tractor.id}: ${tractor.user.lastName} ${tractor.user.firstName}`, value: tractor.id }))])
 
   }, [$message, addToast, filename, reportData.from, reportData.to, tractors, tractorsData, tractorsDataLoading])
 

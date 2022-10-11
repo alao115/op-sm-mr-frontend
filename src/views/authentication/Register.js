@@ -72,25 +72,25 @@ const Register = () => {
               <span className="db">
                 <img src={img1} alt="logo" />
               </span>
-              <h5 className="font-medium mb-3">Sign Up to Admin</h5>
+              <h5 className="font-medium mb-3">Créer un compte sur le tableau de bord</h5>
             </div>
             <Row>
               <Col xs="12">
                 <Form className="mt-3" id="loginform" onSubmit={ signup }>
                   <FormGroup className="mb-3">
-                    <Input type="text" name="uname" id="uname" placeholder="Name" bsSize="lg" onChange={ (e) => signupDispatch({ type: 'setName', value: e.target.value }) } required />
+                    <Input type="text" name="uname" id="uname" placeholder="Entez un nom (Ex: Paul ASSOGBA)" bsSize="lg" onChange={ (e) => signupDispatch({ type: 'setName', value: e.target.value }) } required />
                   </FormGroup>
                   <FormGroup className="mb-3">
-                    <Input type="email" name="email" id="email" placeholder="Email" bsSize="lg" onChange={ (e) => signupDispatch({ type: 'setEmail', value: e.target.value }) } required />
+                    <Input type="email" name="email" id="email" placeholder="Entrez un email (Ex: paul.assogba@sonama.bj)" bsSize="lg" onChange={ (e) => signupDispatch({ type: 'setEmail', value: e.target.value }) } required />
                   </FormGroup>
                   <FormGroup className="mb-3">
-                    <Input type="password" name="password" id="password" placeholder="Password" bsSize="lg" onChange={ (e) => signupDispatch({ type: 'setPassword', value: e.target.value }) } required />
+                    <Input type="password" name="password" id="password" placeholder="Entrez un mot de passe à 8 caractères" bsSize="lg" onChange={ (e) => signupDispatch({ type: 'setPassword', value: e.target.value }) } required />
                   </FormGroup>
                   {/* <CustomInput type="checkbox" id="exampleCustomCheckbox" label="I agree to all Terms" /> */}
                   <Row className="mb-3 mt-3">
                     <Col xs="12">
                       <Button color="primary" size="lg" className="text-uppercase" type="submit" disabled={ !signupData.name || !signupData.email || !signupData.password } block >
-                        Sign Up
+                        Créer maintenant
 												{ onSignup && <Spinner className="ml-2" size="md"></Spinner>}
                       </Button>
                     </Col>

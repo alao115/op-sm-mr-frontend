@@ -1,7 +1,7 @@
 export default function serviceGen ({ serviceName, http }) {
   return class genericService {
-    async getAll() {
-      return await http.get(`/${serviceName}`);
+    async getAll({ page = 0, limit = 10 }) {
+      return await http.get(`/${serviceName}?page=${page}&limit=${limit}`);
     }
 
     async create(data) {

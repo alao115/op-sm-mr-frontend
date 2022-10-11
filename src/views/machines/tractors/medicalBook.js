@@ -96,7 +96,7 @@ const MedicalBook = (props) => {
         <h5 className="text-muted font-light">
           Nom & Prenom: {tractor.user.lastName} {tractor.user.firstName}
         </h5>
-        <h5 className="font-light">Tel: {tractor.user.phone}</h5>
+        <h5 className="font-light">Tel: { tractor.user.phone ? Array.isArray(tractor.user.phone) ? tractor.user.phone.filter(phone => phone !== 'None').join(' / ') : tractor.user.phone : "Non renseigné" } </h5>
         <h5 className="font-light">Adresse: {tractor.user.address}</h5>
       </Card>
 

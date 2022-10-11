@@ -1,10 +1,11 @@
 import moment from 'moment'
-import React, { useState, useEffect }from "react";
+import React, { useState, useEffect, useMemo }from "react";
 import { useSelector } from 'react-redux'
 import { useToasts } from 'react-toast-notifications';
 import { Card, CardTitle, CardBody, Table, Row, Col, Spinner } from "reactstrap";
 import Switch from "react-bootstrap-switch";
 import "react-bootstrap-switch/dist/css/bootstrap3/react-bootstrap-switch.min.css";
+import useFetchResource from '../../hooks/useFetchResource'
 
 
 export default function ListFailure(props) {
@@ -13,15 +14,15 @@ export default function ListFailure(props) {
   const { addToast } = useToasts()
   const [selectedFailure, setSelectedFailure] = useState(new Set())
 
+  const params = useMemo(() => ({ page: 0, limit: 1 }), [])
+  const { resourceData: failuresData, loadingState: failuresDataLoading } = useFetchResource({ errorHeader: "Liste des pannes", resourceService: "failureService", action: "getAll", params })
+
   useEffect(() => {
-    $api.failureService.getAll()
-      .then(({ data }) => {
-        data && setFailures(data)
-      }).catch(err => {
-        const message = err?.response?.data.error.message || err.message;
-        addToast($message({ header: 'Liste pannes', message }), { appearance: 'error', autoDismiss: true })
-      })
-  }, [$api, $message, addToast]);
+    if (failuresDataLoading && !failuresData.length) {
+    } else {
+      setFailures(failuresData)
+    }
+  }, [failuresData, failuresDataLoading])
 
   async function changeFailureState (e, failure) {
     try {

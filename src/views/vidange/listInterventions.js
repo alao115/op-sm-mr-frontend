@@ -1,10 +1,11 @@
 import moment from 'moment'
-import React, { useState, useEffect }from "react";
+import React, { useState, useEffect, useMemo }from "react";
 import { useSelector } from 'react-redux'
 import { useToasts } from 'react-toast-notifications';
 import { Card, CardTitle, CardBody, Table, Row, Col } from "reactstrap";
 import Switch from "react-bootstrap-switch";
 import "react-bootstrap-switch/dist/css/bootstrap3/react-bootstrap-switch.min.css";
+import useFetchResource from '../../hooks/useFetchResource'
 
 
 export default function ListInterventions(props) {
@@ -12,15 +13,15 @@ export default function ListInterventions(props) {
   const { $api, $message } = useSelector((state) => state);
   const { addToast } = useToasts()
 
+  const params = useMemo(() => ({ page: 0, limit: 1 }), [])
+  const { resourceData: interventionsData, loadingState: interventionsDataLoading } = useFetchResource({ errorHeader: "Liste des interventions", resourceService: "interventionService", action: "getAll", params })
+
   useEffect(() => {
-    $api.interventionService.getAll()
-      .then(({ data }) => {
-        data && setInterventions(data)
-      }).catch(err => {
-        const message = err?.response?.data.error.message || err.message;
-        addToast($message({ header: 'Liste interventions', message }), { appearance: 'error', autoDismiss: true })
-      })
-  }, [$api, $message, addToast]);
+    if (interventionsDataLoading && !interventionsData.length) {
+    } else {
+      setInterventions(interventionsData)
+    }
+  }, [interventionsData, interventionsDataLoading])
 
   async function changeInterventionState (e, intervention) {
     try {

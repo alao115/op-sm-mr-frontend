@@ -1,4 +1,4 @@
-import React, { useState, useEffect }from "react";
+import React, { useState, useEffect, useMemo }from "react";
 import { useSelector } from 'react-redux'
 import { useToasts } from 'react-toast-notifications';
 import { Card, CardTitle, CardBody, Table, Row, Col } from "reactstrap";
@@ -14,10 +14,11 @@ export default function ListUser(props) {
   const { addToast } = useToasts()
   const { authUser } = useAuth(ctx => ctx)
 
-  const { resourceData: userData, loadingState: userDataLoading } = useFetchResource({ errorHeader: "Liste des utilisateurs", resourceService: "adminService", action: "getAll" })
+  const params = useMemo(() => ({ page: 0, limit: 1 }), [])
+  const { resourceData: userData, loadingState: userDataLoading } = useFetchResource({ errorHeader: "Liste des utilisateurs", resourceService: "adminService", action: "getAll", params })
 
   useEffect(() => {
-    if (!userDataLoading) {
+    if (!userDataLoading && userData.length) {
       setUsers(userData)
     }
   }, [userData, userDataLoading])

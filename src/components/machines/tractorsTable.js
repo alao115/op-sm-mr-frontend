@@ -1,13 +1,20 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate, } from 'react-router-dom'
 import { Card, CardBody, Table, Row, Col, Spinner } from "reactstrap";
 import FeatherIcon from "feather-icons-react";
+// import _ from 'lodash'
+import Pagination from '../pagination/Pagination';
 
 
-export default function TractorsTable({ tractors, title, children, loading } = { loading: false }) {
+export default function TractorsTable({ tractors, title, children, loading = false, paginationObj = { totalCount: 0, getPageNumber: (page) => {} } }) {
 
   const navigate = useNavigate()
-  // const navigate = useHistory()
+  const [page, setPage] = useState(1)
+
+  const setPageNumber = (page) => {
+    setPage(page)
+    paginationObj.getPageNumber(page - 1)
+  }
 
   return (
     <Row>
@@ -16,7 +23,7 @@ export default function TractorsTable({ tractors, title, children, loading } = {
           { children }
           <CardBody>
           {
-            loading ?
+            loading && tractors.length < 0 ?
             <div className="d-flex justify-content-center w-full align-items-center">
               <Spinner className="ml-2" size="lg" color="primary" style={{width: '6rem', height: '6rem'}}></Spinner>
             </div>:
@@ -44,7 +51,7 @@ export default function TractorsTable({ tractors, title, children, loading } = {
                         </div>
                       </td>
                       <td>{tractor.user.firstName ? tractor.user.firstName : "Non renseigné" } {tractor.user.lastName}</td>
-                      <td> { tractor.user.phone ? Array.isArray(tractor.user.phone) ? tractor.user.phone.filter(phone => phone !== 'None').slice(0, 2).join(' / ') : tractor.user.phone : "Non renseigné" } </td>
+                      <td> { tractor.user.phone ? Array.isArray(tractor.user.phone) ? tractor.user.phone.filter(phone => phone !== 'None').slice(0, 2).join(' / ') : "N/A" : "N/A" } </td>
                       <td>
                         <span> { tractor.user.address ? tractor.user.address : "Non renseigné" } </span>
                       </td>
@@ -58,6 +65,12 @@ export default function TractorsTable({ tractors, title, children, loading } = {
                 })}
               </tbody>
             </Table>}
+            {
+              paginationObj.getPageNumber &&
+              <div className="flex w-full justify-end">
+                <Pagination className="flex mt-4 mb-0" currentPage={page} totalCount={paginationObj.totalCount} pageSize={10} onPageChange={ page => setPageNumber(page) } />
+              </div>
+            }
           </CardBody>
         </Card>
       </Col>

@@ -123,7 +123,7 @@ export default function TractorHS() {
                           </div>
                         </td>
                         <td>{tractor.user ? tractor.user.firstName : "Non renseigné" } {tractor.user && tractor.user.lastName}</td>
-                        <td> { tractor.user ? tractor.user.phone : "Non renseigné" } </td>
+                        <td> { tractor.user.phone ? Array.isArray(tractor.user.phone) ? tractor.user.phone.filter(phone => phone !== 'None').slice(0, 2).join(' / ') : "N/A" : "N/A" } </td>
                         <td>
                           <span> { tractor.user ? tractor.user.address : "Non renseigné" } </span>
                         </td>

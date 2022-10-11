@@ -1,24 +1,21 @@
 import moment from 'moment'
-import React, { useState, useEffect }from "react";
-import { useSelector } from 'react-redux'
-import { useToasts } from 'react-toast-notifications';
+import React, { useState, useEffect, useMemo }from "react";
 import { Card, CardTitle, CardBody, Table, Row, Col } from "reactstrap";
+import useFetchResource from '../../hooks/useFetchResource'
 
 
 export default function ListMaintenance(props) {
   const [maintenances, setMaintenances] = useState([]);
-  const { $api, $message } = useSelector((state) => state);
-  const { addToast } = useToasts()
+
+  const params = useMemo(() => ({ page: 0, limit: 1 }), [])
+  const { resourceData: maintenancesData, loadingState: maintenancesDataLoading } = useFetchResource({ errorHeader: "Liste des maintenances", resourceService: "maintenanceService", action: "getAll", params })
 
   useEffect(() => {
-    $api.maintenanceService.getAll()
-      .then(({ data }) => {
-        data && setMaintenances(data)
-      }).catch(err => {
-        const message = err?.response?.data.error.message || err.message;
-        addToast($message({ header: 'Liste maintenances', message }), { appearance: 'error', autoDismiss: true })
-      })
-  }, [$api, $message, addToast]);
+    if (maintenancesDataLoading && !maintenancesData.length) {
+    } else {
+      setMaintenances(maintenancesData)
+    }
+  }, [maintenancesData, maintenancesDataLoading])
 
   return (
     <Row>

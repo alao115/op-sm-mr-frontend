@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useReducer } from "react";
+import React, { useState, useEffect, useReducer, useMemo } from "react";
 import { useSelector } from "react-redux";
 import Datetime from "react-datetime";
 import { InputGroup, InputGroupText } from 'reactstrap'
@@ -21,6 +21,7 @@ import {
   Spinner,
   Alert
 } from "reactstrap";
+import useFetchResource from '../../hooks/useFetchResource'
 
 const BasicForm = () => {
   const { addToast } = useToasts()
@@ -34,30 +35,26 @@ const BasicForm = () => {
   const [existingMech, setExistingMech] = useState(false);
 
 
-  useEffect(() => {
-    $api.tractorService.getAll().then((response) => {
-      const customTractors = response.data.map((tr) => ({
-        value: tr.tractor.id,
-        label: `${tr.tractor.id} - ${tr.user.firstName} ${tr.user.lastName}`,
-      }));
-      setTractors(customTractors);
-    }).catch(error => {
-      const message = error?.response?.data.error.message || error.message
-      setError(message)
-      addToast($message({ header: 'Liste tracteurs', message }), { appearance: 'error', autoDismiss: true })
-    });
-  }, [$api.tractorService, $message, addToast])
+  const params = useMemo(() => ({ page: 0, limit: Number.POSITIVE_INFINITY }), [])
+  const { resourceData: tractorsData, loadingState: tractorsDataLoading } = useFetchResource({ initialState: { data: [] }, errorHeader: "Liste des tracteurs", resourceService: "tractorService", action: "getAll", params })
+  const { resourceData: usersData, loadingState: usersDataLoading } = useFetchResource({ errorHeader: "Liste des mécaniciens", resourceService: "userService", action: "getAll", params })
 
   useEffect(() => {
-    $api.userService.getAll().then(response => {
-      const customUsers = response.data.map(user => ({ value: user.id, label: `${user.firstName} ${user.lastName} : ${user.phone}`}))
+    if (!tractorsDataLoading && !tractorsData.data.length) {
+    } else {
+      const customTractors = tractorsData.data.map((tr) => ({
+        value: tr.id,
+        label: `${tr.id} - ${tr.user.firstName} ${tr.user.lastName}`,
+      }));
+      setTractors(customTractors)
+    }
+
+    if (!usersDataLoading && !usersData.length) {
+    } else {
+      const customUsers = usersData.map(user => ({ value: user.id, label: `${user.firstName} ${user.lastName} : ${user.phone}`}))
       setUsers(customUsers)
-    }).catch(error => {
-      const message = error?.response?.data.error.message || error.message
-      setError(message)
-      addToast($message({ header: 'Liste utilisateurs', message }), { appearance: 'error', autoDismiss: true })
-    })
-  }, [$api.userService, $message, addToast]);
+    }
+  }, [tractorsData, tractorsDataLoading, usersData, usersDataLoading])
 
   function maintenanceReducer(state, { type, value }) {
     switch (type) {

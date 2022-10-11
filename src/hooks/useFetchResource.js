@@ -7,8 +7,9 @@ export default function useFetchResource({
   errorHeader,
   params,
   action,
+  initialState = []
 }) {
-  const [resourceData, setResourceData] = useState([]);
+  const [resourceData, setResourceData] = useState(initialState);
   const [loadingState, setLoadingState] = useState(false);
   const { $api, $message } = useSelector((state) => state);
   const { addToast } = useToasts();

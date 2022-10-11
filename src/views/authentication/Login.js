@@ -47,7 +47,7 @@ const Login = (props) => {
               <span className="db">
                 <img src={img1} alt="logo" />
               </span>
-              <h5 className="font-medium mb-3">Sign In to Admin</h5>
+              <h5 className="font-medium mb-3">Se connecter au Tableau de bord</h5>
             </div>
             <Row>
               <Col xs="12">
@@ -94,7 +94,7 @@ const Login = (props) => {
                             className="btn btn-block btn-primary"
                             disabled={isSubmitting}
                           >
-                            Login
+                            Se Connecter
                           </button>
                         </Col>
                       </Row>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useReducer } from "react";
+import React, { useState, useEffect, useReducer, useMemo } from "react";
 import { useSelector } from "react-redux";
 import Datetime from "react-datetime";
 import { useToasts } from 'react-toast-notifications';
@@ -18,6 +18,7 @@ import {
   Spinner
 } from "reactstrap";
 import moment from 'moment'
+import useFetchResource from '../../hooks/useFetchResource'
 
 const NewFailure = () => {
 
@@ -27,19 +28,20 @@ const NewFailure = () => {
   const [tractors, setTractors] = useState([]);
 
 
+  const params = useMemo(() => ({ page: 0, limit: 1 }), [])
+  const { resourceData: tractorsData, loadingState: tractorsDataLoading } = useFetchResource({ initialState: { data: [] }, errorHeader: "Liste des tracteurs", resourceService: "tractorService", action: "getAll", params })
+
   useEffect(() => {
-    $api.tractorService.getAll().then((response) => {
-      const customTractors = response.data.map((tr) => ({
-        value: tr.tractor.id,
-        label: `${tr.tractor.id} - ${tr.user.firstName} ${tr.user.lastName}`,
+    if (!tractorsDataLoading && !tractorsData.data.length) {
+    } else {
+      const customTractors = tractorsData.data.map((tr) => ({
+        value: tr.id,
+        label: `${tr.id} - ${tr.user.firstName} ${tr.user.lastName}`,
       }));
-      customTractors && setTractors(customTractors);
-    }).catch(err => {
-        const message = err?.response?.data.error.message || err.message;
-        addToast($message({ header: 'Liste tracteurs', message }), { appearance: 'error', autoDismiss: true })
-      });
- 
-  }, [$api.tractorService, $message, addToast]);
+      setTractors(customTractors)
+    }
+
+  }, [tractorsData, tractorsDataLoading])
 
 
   function failureReducer(state, { type, value }) {

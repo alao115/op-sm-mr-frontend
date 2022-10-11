@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useReducer } from "react";
+import React, { useState, useEffect, useReducer, useMemo } from "react";
 import { useSelector } from "react-redux";
 import Datetime from "react-datetime";
 import { useToasts } from 'react-toast-notifications';
@@ -18,6 +18,7 @@ import {
   Spinner
 } from "reactstrap";
 import moment from 'moment'
+import useFetchResource from '../../hooks/useFetchResource'
 
 const NewFailure = () => {
 
@@ -29,34 +30,55 @@ const NewFailure = () => {
   const [users, setUsers] = useState([]);
 
 
+  const params = useMemo(() => ({ page: 0, limit: Number.POSITIVE_INFINITY}), [])
+  const { resourceData: tractorsData, loadingState: tractorsDataLoading } = useFetchResource({ initialState: { data: [] }, errorHeader: "Liste des tracteurs", resourceService: "tractorService", action: "getAll", params })
+  const { resourceData: usersData, loadingState: usersDataLoading } = useFetchResource({ errorHeader: "Liste des mécaniciens", resourceService: "userService", action: "getAll", params })
+
   useEffect(() => {
-    $api.tractorService.getAll().then((response) => {
-      const customTractors = response.data.map((tr) => ({
-        value: tr.tractor.id,
-        label: `${tr.tractor.id} - ${tr.user.firstName} ${tr.user.lastName}`,
+    if (!tractorsDataLoading && !tractorsData.data.length) {
+    } else {
+      const customTractors = tractorsData.data.map((tr) => ({
+        value: tr.id,
+        label: `${tr.id} - ${tr.user.firstName} ${tr.user.lastName}`,
       }));
-      customTractors && setTractors(customTractors);
-    }).catch(err => {
-        const message = err?.response?.data.error.message || err.message;
-        addToast($message({ header: 'Liste tracteurs', message }), { appearance: 'error', autoDismiss: true })
-      });
+      setTractors(customTractors)
+    }
 
-    $api.userService.getAll().then(response => {
-      const customUsers = response.data.map(user => ({ value: user.id, label: `${user.firstName} ${user.lastName} : ${user.phone}`}))
-      customUsers && setUsers(customUsers)
-    }).catch(err => {
-        const message = err?.response?.data.error.message || err.message;
-        addToast($message({ header: 'Liste utilisateurs', message }), { appearance: 'error', autoDismiss: true })
-      })
+    if (!usersDataLoading && !usersData.length) {
+    } else {
+      const customUsers = usersData.map(user => ({ value: user.id, label: `${user.firstName} ${user.lastName} : ${user.phone}`}))
+      setUsers(customUsers)
+    }
+  }, [tractorsData, tractorsDataLoading, usersData, usersDataLoading])
 
-    $api.mechanicalService.getAll().then(response => {
-      // console.log(response)
-    }).catch(err => {
-        const message = err?.response?.data.error.message || err.message;
-        addToast($message({ header: 'Liste mecaniciens', message }), { appearance: 'error', autoDismiss: true })
-      })
+  // useEffect(() => {
+  //   $api.tractorService.getAll().then((response) => {
+  //     const customTractors = response.data.map((tr) => ({
+  //       value: tr.tractor.id,
+  //       label: `${tr.tractor.id} - ${tr.user.firstName} ${tr.user.lastName}`,
+  //     }));
+  //     customTractors && setTractors(customTractors);
+  //   }).catch(err => {
+  //       const message = err?.response?.data.error.message || err.message;
+  //       addToast($message({ header: 'Liste tracteurs', message }), { appearance: 'error', autoDismiss: true })
+  //     });
+
+  //   $api.userService.getAll().then(response => {
+  //     const customUsers = response.data.map(user => ({ value: user.id, label: `${user.firstName} ${user.lastName} : ${user.phone}`}))
+  //     customUsers && setUsers(customUsers)
+  //   }).catch(err => {
+  //       const message = err?.response?.data.error.message || err.message;
+  //       addToast($message({ header: 'Liste utilisateurs', message }), { appearance: 'error', autoDismiss: true })
+  //     })
+
+  //   $api.mechanicalService.getAll().then(response => {
+  //     // console.log(response)
+  //   }).catch(err => {
+  //       const message = err?.response?.data.error.message || err.message;
+  //       addToast($message({ header: 'Liste mecaniciens', message }), { appearance: 'error', autoDismiss: true })
+  //     })
  
-  }, [$api.mechanicalService, $api.tractorService, $api.userService, $message, addToast]);
+  // }, [$api.mechanicalService, $api.tractorService, $api.userService, $message, addToast]);
 
 
   function interventionReducer(state, { type, value }) {
