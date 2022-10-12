@@ -8,10 +8,8 @@ import tractorsHS from "../views/machines/tractorsHS";
 // const Chat = lazy(() => import("../views/chat/Chat"));
 // const Contacts = lazy(() => import("../views/contacts/Contacts"));
 // const Email = lazy(() => import("../views/email/Email"));
-const Notes = lazy(() => import("../views/notes/Notes"));
 // const Todo = lazy(() => import("../views/todo/Todo"));
 //dashboards
-const Classic = lazy(() => import("../views/dashboards/Classic"));
 // const Cryptocurrency = lazy(() => import("../views/dashboards/CryptoCurrency"));
 // const Ecommerce = lazy(() => import("../views/dashboards/Ecommerce"));
 // const General = lazy(() => import("../views/dashboards/General"));
@@ -87,6 +85,8 @@ const Classic = lazy(() => import("../views/dashboards/Classic"));
 // const auths = [].concat(AuthRoutes);
 
 /* Our components */
+const Notes = lazy(() => import("../views/notes/Notes"));
+const Classic = lazy(() => import("../views/dashboards/Classic"));
 const TractorsListLayout = lazy(() => import("../views/machines/tractors/tractorLayout"));
 const TractorsList = lazy(() => import("../views/machines/tractors/tractorsList"));
 const TractorMedicalBook = lazy(() => import("../views/machines/tractors/medicalBook"));
@@ -156,13 +156,6 @@ var ThemeRoutes = [
           }
         ],
       },
-
-      // {
-      //   path: "/tracteurs/panne",
-      //   name: "Panne",
-      //   icon: "mdi mdi-comment-processing-outline",
-      //   component: Panne,
-      // },
       {
         path: "/tracteurs/listeparatda",
         name: "Liste par ATDA",
@@ -175,12 +168,6 @@ var ThemeRoutes = [
         icon: "mdi mdi-equal",
         component: tractorsHS,
       },
-      // {
-      //   path: "/tracteurs/carte",
-      //   name: "Carte",
-      //   icon: "mdi mdi-arrange-send-backward",
-      //   component: Badges,
-      // },
     ],
   },
   {
