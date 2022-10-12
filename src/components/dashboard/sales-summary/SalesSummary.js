@@ -26,7 +26,7 @@ const SalesSummary = () => {
   const [reportOverviewLoading, setReportOverviewLoading] = useState(false)
   const [reportOverviewByAtda, setReportOverviewByAtda] = useState([])
   const [atda, setAtda] = useState("")
-  const [valType, setValType] = useState(false)
+  const [valType, setValType] = useState(true)
   const [previousMonth, setPreviousMonth] = useState(0)
   const [tractorOverview, setTractorOverview] = useState([])
   const [tractorOverviewLoading, setTractorOverviewLoading] = useState(false)
@@ -176,7 +176,7 @@ const SalesSummary = () => {
           </div>
         </div>
         <Row>
-          <Col lg="4" className='flex flex-col'>
+          <Col lg="3" className='flex flex-col'>
             {
               tractorOverviewLoading ?
               <div className="d-flex justify-content-center h-100 align-items-center">
@@ -185,8 +185,8 @@ const SalesSummary = () => {
               <>
                 {/* <h1 className="mb-0 mt-4">699</h1>
                 <h6 className="font-light text-muted">Nombre de trateur total</h6> */}
-                <div className='my-auto'>
-                  <h1 className="mt-8 mb-0">{ tractorOverview.tractorTotal }</h1>
+                <div className='my-auto text-center'>
+                  <h1 className="mt-8 mb-0 text-8xl">{ tractorOverview.tractorTotal }</h1>
                   <h4 className="font-light text-muted">Tracteurs tracés</h4>
                 </div>
                 <div className="flex space-x-4 mt-auto">
@@ -196,7 +196,7 @@ const SalesSummary = () => {
               </>
             }    
           </Col>
-          <Col lg="8">
+          <Col lg="9">
             <div className="campaign ct-charts">
               <div
                 className="chart-wrapper"

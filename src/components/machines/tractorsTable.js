@@ -6,7 +6,7 @@ import FeatherIcon from "feather-icons-react";
 import Pagination from '../pagination/Pagination';
 
 
-export default function TractorsTable({ tractors, title, children, loading = false, paginationObj = { totalCount: 0, getPageNumber: (page) => {} } }) {
+export default function TractorsTable({ tractors = [], title, children, loading = false, paginationObj = { totalCount: 0, getPageNumber: (page) => {} } }) {
 
   const navigate = useNavigate()
   const [page, setPage] = useState(1)

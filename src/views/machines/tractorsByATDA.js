@@ -39,7 +39,10 @@ export default function TractorByATDA(props) {
           !loading ?
           <CardTitle className="bg-light border-bottom p-3 mb-0">
             <Row className="justify-content-between px-4">
-              <h2>Liste des tracteurs par ATDA</h2>
+              <div className="flex justify-between">
+                <h2>Liste des tracteurs par ATDA</h2>
+                <h3>Nombre de tracteurs: { filterTractors.length }</h3>
+              </div>
               <ButtonGroup className="align-items-center">
                 <span className='mr-4'>ATDA N<sup>o</sup>: </span>
                 {[1, 2, 3, 4, 5, 6, 7].map((atda) => (
@@ -53,7 +56,10 @@ export default function TractorByATDA(props) {
           <>
             <CardTitle className="bg-light border-bottom p-3 mb-0">
               <Row className="justify-content-between px-4">
-                <h2>Liste des tracteurs par ATDA</h2>
+                <div className="flex justify-between">
+                  <h2>Liste des tracteurs par ATDA</h2>
+                  <h3>Nombre de tracteurs: { filterTractors.length }</h3>
+                </div>
                 <ButtonGroup className="align-items-center">
                   <span className='mr-4'>ATDA N<sup>o</sup>: </span>
                   {[1, 2, 3, 4, 5, 6, 7].map((atda) => (

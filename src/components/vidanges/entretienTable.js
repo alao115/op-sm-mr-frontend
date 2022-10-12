@@ -75,7 +75,7 @@ export default function EntretienTable({ tractors }) {
                         </div>
                       </td>
                       <td>{tractor.user?.firstName} {tractor.user?.lastName}</td>
-                      <td> { tractor.user?.phone} </td>
+                      <td> { tractor.user?.phone ? Array.isArray(tractor.user.phone) ? tractor.user.phone.filter(phone => phone !== 'None').slice(0, 2).join(' / ') : "N/A" : "N/A" } </td>
                       <td>
                         <span> {tractor.user?.address} </span>
                       </td>
