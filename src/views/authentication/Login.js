@@ -79,13 +79,13 @@ const Login = (props) => {
                         <InputGroupText className='rounded-r-none'>
                           <i className="ti-user"></i>
                         </InputGroupText>
-                        <CustomTextInput className="w-full" innerInputClassName="rounded-l-none border-l-0" name="username" type="text" />
+                        <CustomTextInput className="w-full" innerInputClassName="rounded-l-none border-l-0" name="username" type="text" placeholder="Email" />
                       </div>
                       <div className="w-full flex mb-2">
                         <InputGroupText className='rounded-r-none'>
                           <i className="ti-lock"></i>
                         </InputGroupText>
-                        <CustomTextInput className='w-11/12' innerInputClassName="rounded-l-none border-l-0" name="password" type="password" />
+                        <CustomTextInput className='w-11/12' innerInputClassName="rounded-l-none border-l-0" name="password" type="password" placeholder="Mot de passe" />
                       </div>
                       <Row className="mb-3 mt-4">
                         <Col xs="12">
