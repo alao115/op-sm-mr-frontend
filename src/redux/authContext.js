@@ -24,14 +24,27 @@ export default function AuthContextFn (props) {
   const { addToast } = useToasts()
   const dispatch = useDispatch()
 
-  const loginFn = ({ accessToken, refreshToken, expiresIn }) => {
-    setToken(accessToken)
-    setRefreshToken(refreshToken)
-		setExpireIn(expiresIn)
-  	localStorage.setItem("miriaa-token", accessToken)
-    localStorage.setItem("miriaa-refreshToken", refreshToken)
-		localStorage.setItem('miriaa-expiresIn', expiresIn)
-  };
+  const loginFn = useCallback(({ accessToken, refreshToken, expiresIn }) => {
+    return $api.authService.getAuthUser(accessToken)
+        .then(({ data }) => {
+          if(!data.data.user.isActivated) {
+            throw new Error("Votre compte n'est activé. Veuillez-vous rapprocher de l'administrateur")
+            // addToast($message({ header: 'Authentification', message: "Votre compte n'est activé. Veuillez-vous rapprocher de l'administrateur" }), { appearance: 'error', autoDismiss: true })
+            // logoutFn()
+          }
+					setAuthUser(data.data.user)
+          setToken(accessToken)
+          setRefreshToken(refreshToken)
+          setExpireIn(expiresIn)
+          localStorage.setItem("miriaa-token", accessToken)
+          localStorage.setItem("miriaa-refreshToken", refreshToken)
+          localStorage.setItem('miriaa-expiresIn', expiresIn)
+        }).catch(err => {
+        	const message = err?.response?.data.error.message || err.message;
+        	addToast($message({ header: '', message }), { appearance: 'error', autoDismiss: true })
+					logoutFn()
+				})
+  },[$api.authService, $message, addToast]);
 
   const logoutFn = () => {
     setToken("");
@@ -52,34 +65,17 @@ export default function AuthContextFn (props) {
         addToast($message({ header: 'Token expired', message: 'Votre token est expiré' }), { appearance: 'error', autoDismiss: true })
 				logoutFn()
     }
-  }, [$api.authService, $message, addToast])
+  }, [$api.authService, $message, addToast, loginFn])
 
-	useEffect(() => {
-		if(expireIn > 0) {
+  useEffect(() => {
+    if(expireIn > 0) {
 			const remainingTime = (+expireIn) - (+moment().unix())
 			setTimeout(() => {
         refreshTokenFn()
 			}, remainingTime * 1000)
 		}
-	}, [$message, addToast, expireIn, refreshToken, refreshTokenFn])
-
-  useEffect(() => {
-    if (token) {
-      $api.authService.getAuthUser(token)
-        .then(({ data }) => {
-          if(!data.data.user.isActivated) {
-            addToast($message({ header: 'Authentification', message: "Votre compte n'est activé. Veuillez-vous rapprocher de l'administrateur" }), { appearance: 'error', autoDismiss: true })
-            logoutFn()
-          }
-					setAuthUser(data.data.user)
-        }).catch(err => {
-        	const message = err?.response?.data.error.message || err.message;
-        	addToast($message({ header: '', message }), { appearance: 'error', autoDismiss: true })
-					logoutFn()
-				})
-    }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  } , [$api.authService, token, dispatch, addToast])
+  } , [$message, addToast, expireIn, refreshToken, refreshTokenFn])
 
 
   const initialState = {

@@ -1,17 +1,12 @@
 import React, { useState } from "react";
 import {
-  InputGroup,
-  InputGroupAddon,
   InputGroupText,
-  Input,
-  FormGroup,
   Row,
   Col,
-  Button,
 } from "reactstrap";
 import img1 from "../../assets/images/logo-icon.png";
 import img2 from "../../assets/images/background/login-register.jpg";
-import { Formik, Field, Form, ErrorMessage } from "formik";
+import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { useSelector } from 'react-redux'
 import useAuth from '../../hooks/useAuth';
@@ -64,9 +59,11 @@ const Login = (props) => {
                     setStatus();
                     $api.authService.signin({ email: username, password }).then(
                       (response) => {
-                        loginFn(response.data.data);
-                        const { from } = location.state || { from: { pathname: "/" } };
-                        navigate((from || {pathname: "/"}));
+                        loginFn(response.data.data)
+                          .then(() => {
+                            const { from } = location.state || { from: { pathname: "/" } };
+                            navigate((from || {pathname: "/"}));
+                          })
                       },
                       (error) => {
                         setSubmitting(false);
