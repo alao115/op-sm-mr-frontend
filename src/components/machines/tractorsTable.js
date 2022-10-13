@@ -1,20 +1,26 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, } from 'react-router-dom'
 import { Card, CardBody, Table, Row, Col, Spinner } from "reactstrap";
 import FeatherIcon from "feather-icons-react";
-// import _ from 'lodash'
 import Pagination from '../pagination/Pagination';
+import useAuth from '../../hooks/useAuth';
+import { USER_ROLE } from '../../redux/constants'
 
 
 export default function TractorsTable({ tractors = [], title, children, loading = false, paginationObj = { totalCount: 0, getPageNumber: (page) => {} } }) {
 
   const navigate = useNavigate()
   const [page, setPage] = useState(1)
+  const { authUser } = useAuth(ctx => ctx)
 
   const setPageNumber = (page) => {
     setPage(page)
     paginationObj.getPageNumber(page - 1)
   }
+
+  // useEffect(() => {
+  //   console.log(authUser)
+  // }, [authUser])
 
   return (
     <Row>
@@ -58,7 +64,10 @@ export default function TractorsTable({ tractors = [], title, children, loading 
                       <td className="blue-grey-text  text-darken-4 font-medium"> {`${tractor.type === 1 ? 'Tracteur' : 'Motoculteur'}, ${tractor.tractorMark}`} </td>
                       <td className='space-x-2'>
                         <span onClick={() => navigate(`/tracteurs/carnet/${tractor.id}`, { state: { tractor } })} className='bg-slate-300 w-14  inline-flex text-gray-500 p-1 px-3 rounded-full hover:bg-slate-400 hover:text-white shadow-lg shadow-slate-700'><FeatherIcon className="h-4" icon="eye" /></span>
-                        <span onClick={() => navigate(`/tracteurs/edit/${tractor.id}`, { state: { tractor } })} className='bg-slate-300 w-14  inline-flex text-gray-500 p-1 px-3 rounded-full hover:bg-slate-400 hover:text-white shadow-lg shadow-slate-700'><FeatherIcon className="h-4" icon="edit" /></span>
+                        {
+                          (authUser?.role === USER_ROLE.SUPERADMIN ) &&
+                          <span onClick={() => navigate(`/tracteurs/edit/${tractor.id}`, { state: { tractor } })} className='bg-slate-300 w-14  inline-flex text-gray-500 p-1 px-3 rounded-full hover:bg-slate-400 hover:text-white shadow-lg shadow-slate-700'><FeatherIcon className="h-4" icon="edit" /></span>
+                        }
                       </td>
                     </tr>
                   );

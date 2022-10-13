@@ -60,3 +60,10 @@ export const ASSIGN_LABEL = "ASSIGN_LABEL";
 export const SET_SELECTED_EMAIL = "SET_SELECTED_EMAIL";
 export const FILTER_EMAIL = "FILTER_EMAIL";
 export const SET_EMAIL_VISIBILITY_FILTER = "SET_EMAIL_VISIBILITY_FILTER";
+
+
+export const USER_ROLE = {
+	SUPERADMIN: 'superadmin',
+	ADMIN: "admin",
+	REGULAR_USER: 'user'
+}

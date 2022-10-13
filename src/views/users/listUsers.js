@@ -68,7 +68,7 @@ export default function ListUser(props) {
                         </td>
                         <td> { user.email } </td>
                         <td>
-                          <select defaultValue={user.role} disabled={authUser.id === user.id } onChange={(e) => { e.persist(); changeUserRole(e.target.value, user) }}>
+                          <select defaultValue={user.role} disabled={authUser?.id === user.id } onChange={(e) => { e.persist(); changeUserRole(e.target.value, user) }}>
                             <option value="superadmin">Superadmin</option>
                             <option value="admin">Admin</option>
                             <option value="user">User</option>
@@ -76,7 +76,7 @@ export default function ListUser(props) {
                         </td>
                         <td>
                           <span>
-                            <Switch disabled={authUser.id === user.id } key={user.id} defaultValue={user.isActivated} onText="Activé" offText="Désactivé" onChange={(e) =>  changeUserState(e.state.value, user)} />
+                            <Switch disabled={authUser?.id === user.id } key={user.id} defaultValue={user.isActivated} onText="Activé" offText="Désactivé" onChange={(e) =>  changeUserState(e.state.value, user)} />
                           </span>
                         </td>
                       </tr>

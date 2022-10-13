@@ -68,10 +68,6 @@ var ThemeRoutes = [
           {
             path: "carnet/:tractorChassis",
             component: TractorMedicalBook,
-          },
-          {
-            path: "edit/:tractorChassis",
-            component: EditAddTractor
           }
         ],
       },
