@@ -1,4 +1,4 @@
-import React, { useReducer, useState } from "react";
+import React, { useEffect, useReducer, useState } from "react";
 import {
   Input,
   FormGroup,
@@ -25,6 +25,8 @@ const Register = () => {
 	const { $api, $message } = useSelector(state => state)
 	const [onSignup, setOnSignup] = useState(false)
 	const { addToast } = useToasts()
+
+  // useEffect(() => {})
 
 	function signupReducer (state, { type, value }) {
 		switch (type) {

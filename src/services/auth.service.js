@@ -9,7 +9,7 @@ export default function authService({ http, authAxios }) {
     }
 
 		async refreshToken(data) {
-			return http.post("auth/refresh-token", data)
+			return http.post("/auth/refresh-token", data)
 		}
 
     async getAuthUser(token = null) {

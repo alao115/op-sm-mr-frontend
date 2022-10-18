@@ -73,6 +73,7 @@ export default function ReportStat(props) {
     if (tractorsDataLoading && !tractorsData.data.length) {
       setTractorLoading(true)
     } else {
+      // console.log(tractorsData)
       setTractors(tractorsData.data)
       setTractorLoading(false)
     }
@@ -89,9 +90,6 @@ export default function ReportStat(props) {
 
   }, [$message, addToast, filename, reportData.from, reportData.to, tractors, tractorsData, tractorsDataLoading])
 
-  // useEffect(() => {
-  // }, [tractors])
-
   async function executeReport(e) {
     try {
       e.preventDefault();
@@ -101,6 +99,7 @@ export default function ReportStat(props) {
 
       if (reportData.atda) {
         const { data } = await $api.reportService.executeReportbyATDA({ ...reportData, from: moment(reportData.from).format("DD-MM-YYYY"), to: moment(reportData.to).format("DD-MM-YYYY") })
+        console.log(data)
         setReports(data)  
       } 
       else {
@@ -140,7 +139,7 @@ export default function ReportStat(props) {
       <Card>
         <CardTitle className="border-bottom p-3">Exécuter un rapport</CardTitle>
         {
-          tractorLoading ? 
+          tractorLoading && !autoCompletionData.length ? 
           <CardBody className="text-center">
             <h4>Chargement...</h4>
             <Spinner style={{ width: '3rem', height: '3rem' }} />
@@ -214,9 +213,9 @@ export default function ReportStat(props) {
                       <tr className="border-0">
                         <th className="border-0">ATDA</th>
                         <th className="border-0">Taille ATDA</th>
-                        <th className="border-0">Heure moteur totale</th>
-                        <th className="border-0">Vitesse totale</th>
-                        <th className="border-0">Distance totale</th>
+                        <th className="border-0">Heure moteur Moy.</th>
+                        <th className="border-0">Vitesse  Moy.</th>
+                        <th className="border-0">Distance  Moy.</th>
                       </tr>
                     </thead>
                     <tbody>

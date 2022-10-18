@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useReducer, useMemo } from "react";
 import { useSelector } from "react-redux";
 import Datetime from "react-datetime";
-import { InputGroup, InputGroupText } from 'reactstrap'
+import { FormFeedback, InputGroup, InputGroupText } from 'reactstrap'
 import "react-datetime/css/react-datetime.css";
 import AutoCompletionInput from "../../components/autocompletion/AutoCompletionInput";
 import { useToasts } from "react-toast-notifications"
@@ -33,6 +33,9 @@ const BasicForm = () => {
   const [users, setUsers] = useState([]);
   const [error, setError] = useState("")
   const [existingMech, setExistingMech] = useState(false);
+  const [isNameValid, setIsNameValid] = useState(false);
+  const [isSurnameValid, setIsSurnameValid] = useState(false);
+  const [isPhoneValid, setIsPhoneValid] = useState(false);
 
 
   const params = useMemo(() => ({ page: 0, limit: 0  }), [])
@@ -125,6 +128,27 @@ const BasicForm = () => {
         const message = err?.response?.data.error.message || err.message;
         addToast($message({ header: 'Ajout vidange', message }), { appearance: 'error', autoDismiss: true })
       })
+  }
+
+  function validateMechData(field, value) {
+    if (field === 'phone') {
+      if(/[a-zA-Z]/.test(value)) {
+        setIsPhoneValid(true)
+      }
+      else setIsPhoneValid(false)
+    } else {
+      if(/\d/.test(value)) {
+        if(field === 'name') 
+          setIsNameValid(true)
+        else
+          setIsSurnameValid(true)
+      } else {
+        if(field === 'name') 
+          setIsNameValid(false)
+        else
+          setIsSurnameValid(false)
+      }
+    }
   }
 
   return (
@@ -231,19 +255,22 @@ const BasicForm = () => {
                               <Col md="4">
                                 <FormGroup>
                                   <Label>Nom</Label>
-                                  <Input type="text" placeholder="Nom du mecanicien" name="foreignMechName" onChange={(e) => dispatch({ type: 'setMechName', value: e.target.value })} value={maintenanceData.foreignMechName}/>
+                                  <Input invalid={isNameValid} type="text" placeholder="Nom du mecanicien" name="foreignMechName" onInput={(e) => validateMechData('name', e.target.value) } onChange={(e) => dispatch({ type: 'setMechName', value: e.target.value })} value={maintenanceData.foreignMechName}/>
+                                  <FormFeedback>Nom incorrect</FormFeedback>
                                 </FormGroup>
                               </Col>
                               <Col md="4">
                                 <FormGroup>
                                   <Label>Prenom</Label>
-                                  <Input type="text" placeholder="prenom du mecanicien" name="foreignMechSurname" onChange={(e) => dispatch({ type: 'setMechSurname', value: e.target.value })} value={maintenanceData.foreignMechSurname}/>
+                                  <Input invalid={isSurnameValid} type="text" placeholder="prenom du mecanicien" name="foreignMechSurname" onInput={(e) => validateMechData('surname', e.target.value)} onChange={(e) => dispatch({ type: 'setMechSurname', value: e.target.value })} value={maintenanceData.foreignMechSurname}/>
+                                  <FormFeedback>Prénom incorrect</FormFeedback>
                                 </FormGroup>
                               </Col>
                               <Col md="4">
                                 <FormGroup>
                                   <Label>Contact</Label>
-                                  <Input type="tel" placeholder="Contact du mecanicien" name="foreignMechPhone" onChange={(e) => dispatch({ type: 'setMechPhone', value: e.target.value })} value={maintenanceData.foreignMechPhone}/>
+                                  <Input invalid={isPhoneValid} onInput={ (e) => validateMechData('phone', e.target.value) } type="tel" placeholder="Contact du mecanicien" name="foreignMechPhone" onChange={(e) => dispatch({ type: 'setMechPhone', value: e.target.value })} value={maintenanceData.foreignMechPhone}/>
+                                  <FormFeedback>Numéro de téléphone incorrect</FormFeedback>
                                 </FormGroup>
                               </Col>          
                             </Row>

@@ -15,7 +15,10 @@ export default function Logs(props) {
   useEffect(() => {
     console.log('useEffect hook...')
     const eventSource = $api.logService.getLogs() //.then(({ data }) => setLogs(data.logs))
-    eventSource.onmessage = (e) => console.log(e)
+    eventSource.onmessage = (e) => {
+      console.log('Received: ')
+      console.log(e)
+    }
 
   }, [$api])
 

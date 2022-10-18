@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Card, CardBody, Table, Row, Col, CardTitle, Spinner, Input, Button, ButtonGroup } from "reactstrap";
 import { useSelector } from 'react-redux'
 import { useToasts } from 'react-toast-notifications'
@@ -19,7 +19,9 @@ export default function TractorHS() {
   const [filterTractors, setFilterTractors] = useState([])
   const [sortedOrder, setSortOrder] = useState('')
 
-  const { resourceData: tractorsHSData, loadingState: tractorsHSDataLoading } = useFetchResource({ errorHeader: "Liste tracteurs hors service", resourceService: "tractorService", action: "getTractorHS" })
+  const controller = useMemo(() => new AbortController(), [])
+  const config = useMemo(() => ({ signal: controller.signal }), [controller])
+  const { resourceData: tractorsHSData, loadingState: tractorsHSDataLoading } = useFetchResource({ errorHeader: "Liste tracteurs hors service", resourceService: "tractorService", action: "getTractorHS", config })
 
   useEffect(() => {
     if (tractorsHSDataLoading) {
@@ -31,8 +33,10 @@ export default function TractorHS() {
       setSortOrder('asc')
     }
     
-    // setFilterTractors(tractors)
-  }, [tractors, tractorsHSData, tractorsHSDataLoading])
+    return () => {
+      controller.abort()
+    }
+  }, [controller, tractors, tractorsHSData, tractorsHSDataLoading])
 
   useEffect(() => {
     setFilterTractors(tractors)
