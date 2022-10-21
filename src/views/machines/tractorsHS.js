@@ -29,8 +29,9 @@ export default function TractorHS() {
     } else {
       setLoading(false)
       setTractors(tractorsHSData.tractors || [])
-      console.log('Setting sort order ')
+      // console.log('Setting sort order ')
       setSortOrder('asc')
+      // console.log(tractorsHSData)
     }
     
     return () => {
@@ -45,13 +46,13 @@ export default function TractorHS() {
   useEffect(() => {
     let results = []
     if(search) {
-      results = tractors.filter(tractor => `${tractor.user.firstName} ${tractor.user.lastName}`.toLowerCase().trim().includes(search.toLowerCase().trim()) || tractor.tractor.id.toLowerCase().includes(search.toLowerCase().trim()))
+      results = tractors.filter(tractor => `${tractor.user.firstName} ${tractor.user.lastName}`.toLowerCase().trim().includes(search.toLowerCase().trim()) || tractor.id.toLowerCase().includes(search.toLowerCase().trim()))
     } else results = tractors
     setFilterTractors(results)
   }, [search, tractors])
 
   useEffect(() => {
-    console.log(sortedOrder)
+    // console.log(sortedOrder)
     const results = tractors.sort((t1, t2) => {
       const a = moment(t1.lastReport, "DD-MM-YYYY").unix()
       const b = moment(t2.lastReport, "DD-MM-YYYY").unix()
@@ -118,11 +119,11 @@ export default function TractorHS() {
                 <tbody>
                   {filterTractors.map((tractor) => {
                     return (
-                      <tr key={tractor.tractor.id}>
+                      <tr key={tractor.id}>
                         <td>
                           <div className="d-flex no-block align-items-center">
                             <div className="">
-                              <h5 className="mb-0 font-16 font-medium">{tractor.tractor.id}</h5>
+                              <h5 className="mb-0 font-16 font-medium">{tractor.id}</h5>
                             </div>
                           </div>
                         </td>

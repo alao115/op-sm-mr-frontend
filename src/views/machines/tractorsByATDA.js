@@ -45,7 +45,7 @@ export default function TractorByATDA(props) {
               </div>
               <ButtonGroup className="align-items-center">
                 <span className='mr-4'>ATDA N<sup>o</sup>: </span>
-                {[1, 2, 3, 4, 5, 6, 7].map((atda) => (
+                {[1, 2, 3, 4, 5, 6, 7,].map((atda) => (
                   <Button className="btn" outline={ currentATDA !== atda } color="secondary" key={atda} onClick={(e) => { setAtda(atda); setCurrentATDA(atda) } }>
                     {atda}
                   </Button>
